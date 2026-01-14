@@ -269,7 +269,8 @@
         "minCount": "MinCountConstraintComponent significa que falta una propiedad requerida o no tiene suficientes valores.",
         "resultMessage": "Este mensaje legible explica qué salió mal. Léelo con atención para obtener pistas sobre cómo corregir el problema.",
         "focusNode": "El Nodo Foco es el recurso RDF exacto donde se detectó el problema. Usa esta URI para localizar la incidencia en tus datos.",
-        "resultPath": "La Ruta del Resultado muestra qué propiedad está fallando (ej. dcat:dataset). Añade o corrige esta propiedad en el nodo foco."
+        "resultPath": "La Ruta del Resultado muestra qué propiedad está fallando (ej. dcat:dataset). Añade o corrige esta propiedad en el nodo foco.",
+        "value": "El campo sh:value muestra el valor problemático real que causó el fallo de validación. Útil para entender qué dato específico es incorrecto."
       }
     },
     "glossary": {
@@ -356,6 +357,10 @@
       "shapesGraph": {
         "term": "Grafo de formas",
         "definition": "El grafo RDF que contiene las formas SHACL y definiciones de restricciones. Describe cómo deberían ser los datos válidos. Separado del grafo de datos que se valida."
+      },
+      "value": {
+        "term": "sh:value",
+        "definition": "El término RDF real (URI, literal o nodo en blanco) que violó una restricción. Muestra **exactamente qué valor** causó el fallo de validación. Ejemplo: `sh:value \"formato-invalido\"` indica que la cadena \"formato-invalido\" no coincidió con el patrón requerido."
       }
     },
     "resources": {
@@ -433,13 +438,13 @@
   "profiles": {
     "names": {
       "dcat_ap": {
-        "2.1.1": "DCAT-AP 2.1.1"
+        "2.1.1": "DCAT-AP"
       },
       "dcat_ap_es": {
-        "1.0.0": "DCAT-AP-ES 1.0.0"
+        "1.0.0": "DCAT-AP-ES"
       },
       "dcat_ap_es_hvd": {
-        "1.0.0": "DCAT-AP-ES HVD 1.0.0"
+        "1.0.0": "DCAT-AP-ES HVD"
       },
       "nti_risp": {
         "2013": "NTI-RISP (2013)"
