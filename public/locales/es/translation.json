@@ -1,0 +1,288 @@
+{
+  "app": {
+    "title": "Validador SHACL",
+    "tagline": "Garantía de calidad para metadatos DCAT-AP"
+  },
+  "nav": {
+    "validator": "Validador",
+    "viewer": "Informes",
+    "guide": "Guía",
+    "settings": "Ajustes",
+    "language": "Idioma",
+    "quickAccess": "Accesos rápidos",
+    "toggleSidebar": "Mostrar u ocultar navegación",
+    "descriptions": {
+      "validator": "Ejecuta validaciones SHACL con Monaco y TanStack",
+      "viewer": "Sube TTL y explora analíticas",
+      "guide": "Guías, listas de verificación y ejemplos",
+      "settings": "Temas, tokens y despliegue"
+    },
+    "stats": {
+      "title": "Resumen del RDF",
+      "subtitle": "Elementos detectados",
+      "profileContext": "Versión {{version}} · {{branch}}",
+      "datasets": "Conjuntos de datos",
+      "dataServices": "Servicios de datos",
+      "distributions": "Distribuciones",
+      "empty": "Añade o pega metadatos para ver estadísticas rápidas.",
+      "collapse": "Ocultar resumen",
+      "expand": "Mostrar resumen"
+    },
+    "languageNames": {
+      "es": "Español",
+      "en": "Inglés"
+    }
+  },
+  "header": {
+    "githubAria": "Repositorio en GitHub",
+    "github": "Abrir repositorio"
+  },
+  "command": {
+    "placeholder": "Escribe un comando o busca…",
+    "empty": "Sin coincidencias. Prueba otra palabra clave.",
+    "navigation": "Navegación",
+    "open": "Abrir paleta de comandos"
+  },
+  "home": {
+    "title": "Validador de Metadatos RDF",
+    "subtitle": "Valida tus metadatos contra perfiles SHACL estándar (DCAT-AP, DCAT-AP-ES, NTI-RISP) directamente en el navegador.",
+    "docsCta": "Leer la guía de uso"
+  },
+  "validator": {
+    "selectProfile": "Perfil de validación",
+    "version": "Versión",
+    "branch": "Rama SHACL",
+    "profileInfo": "Ver documentación del perfil",
+    "validatingAgainst": "Validando contra",
+    "pasteText": "Entrada directa",
+    "url": "Desde URL",
+    "uploadTab": "Subida",
+    "placeholder": "Pega aquí tu contenido RDF (Turtle, RDF/XML, JSON-LD)...",
+    "urlPlaceholder": "https://ejemplo.gob.es/datos.ttl",
+    "corsWarning": "Nota: Algunos servidores bloquean peticiones desde el navegador (CORS). Si falla, descarga el fichero y pega el contenido directamente.",
+    "loadSample": "Cargar datos de ejemplo",
+    "urlError": "No se pudo obtener el contenido desde la URL. Puede deberse a CORS. Prueba a copiar el contenido y pegarlo en la pestaña \"Entrada directa\".",
+    "workspaceTitle": "Espacio de trabajo de entrada",
+    "workspaceSubtitle": "Pega RDF, consulta una URL o sube catálogos pesados con seguimiento del progreso.",
+    "actions": {
+      "pasteTitle": "Entrada directa",
+      "pasteDescription": "Escribe o pega RDF con Monaco y previsualiza transformaciones.",
+      "urlTitle": "Desde URL",
+      "urlDescription": "Consulta un catálogo remoto, inspecciona metadatos y valida sin salir.",
+      "uploadTitle": "Subida",
+      "uploadDescription": "Arrastra grandes ficheros TTL/JSON-LD con lectura fragmentada y opción de cancelar.",
+      "ready": "Listo",
+      "idle": "Inactivo"
+    },
+    "loadingEditor": "Cargando editor Monaco…",
+    "probeUrl": "Obtener metadatos",
+    "selectedFile": "Archivo cargado: {{file}}",
+    "metadata": {
+      "type": "Tipo de contenido",
+      "size": "Tamaño aproximado",
+      "unknown": "Desconocido"
+    },
+    "uploadCancelled": "Carga cancelada",
+    "dropTitle": "Arrastra un archivo TTL / RDF / JSON-LD",
+    "dropSubtitle": "Los archivos permanecen en el navegador. Lectura fragmentada para más fiabilidad.",
+    "dropActive": "Suelta el catálogo RDF aquí",
+    "dropInactive": "Arrastra un catálogo RDF aquí o haz clic para seleccionar",
+    "fileLoaded": "Catálogo cargado correctamente",
+    "uploading": "Cargando…",
+    "cancelUpload": "Cancelar",
+    "currentProfile": "Perfil actual",
+    "profileReadyHint": "Listo para validar",
+    "previewLabel": "Vista previa",
+    "jsonPreview": "JSON-LD",
+    "normalizedPreview": "TTL normalizado"
+  },
+  "common": {
+    "validate": "Validar",
+    "validating": "Validando...",
+    "or": "O",
+    "clear": "Limpiar"
+  },
+  "results": {
+    "conforms": "Conforme",
+    "notConforms": "No conforme",
+    "summary": "Violaciones: {{violations}}, Advertencias: {{warnings}}, Info: {{infos}}",
+    "details": "Detalles de la validación",
+    "detailsDescription": "Agrupa incidencias iguales, fija columnas y exporta vistas filtradas.",
+    "noIssues": "No se encontraron incidencias de validación.",
+    "download": "Descargar informe",
+    "downloadTTL": "Descargar como TTL",
+    "downloadCSV": "Descargar como CSV",
+    "totalShapes": "Hallazgos totales",
+    "documentationLink": "Documentación",
+    "affectedSingle": "1 recurso afectado",
+    "affectedPlural": "{{count}} recursos afectados",
+    "showOccurrences": "Mostrar nodos afectados",
+    "hideOccurrences": "Ocultar nodos afectados"
+  },
+  "severity": {
+    "violation": "Error",
+    "warning": "Recomendación",
+    "info": "Info"
+  },
+  "filter": {
+    "all": "Todas las severidades"
+  },
+  "table": {
+    "severity": "Severidad",
+    "message": "Mensaje",
+    "component": "Restricción",
+    "count": "Recuento",
+    "focusNode": "Nodo foco",
+    "path": "Ruta",
+    "value": "Valor"
+  },
+  "viewer": {
+    "title": "Visor de informes SHACL",
+    "subtitle": "Visualiza informes de validación SHACL existentes (formato Turtle).",
+    "import": "Importar informe",
+    "importDescription": "Sube ficheros TTL o pega RDF en crudo y accede a analíticas y exportaciones.",
+    "upload": "Subir archivo",
+    "uploadHint": "Formatos aceptados: .ttl, .rdf, .jsonld",
+    "paste": "Pegar contenido del informe",
+    "pasteHint": "Pega aquí el contenido del informe SHACL en formato Turtle o JSON-LD...",
+    "dropActive": "Suelta el archivo aquí",
+    "dropInactive": "Arrastra un informe SHACL aquí o haz clic para seleccionar",
+    "fileLoaded": "Archivo cargado correctamente",
+    "visualize": "Visualizar informe",
+    "error": "No se pudo parsear el informe SHACL. Asegúrate de que está en formato Turtle (TTL).",
+    "severityBreakdown": "Distribución por severidad",
+    "topShapes": "Shapes con más errores",
+    "topShapesHint": "Shapes y restricciones con mayor número de incidencias.",
+    "emptyStats": "Importa un informe para ver la distribución por severidades.",
+    "emptyShapes": "Sube un informe SHACL para detectar los shapes con más incidencias.",
+    "exportSegments": "Descargar segmentos"
+  },
+  "guide": {
+    "title": "Guía SHACL",
+    "whatIsShacl": "¿Qué es SHACL?",
+    "howToUse": "Cómo usar el validador",
+    "understandingResults": "Entendiendo los resultados",
+    "description": "SHACL (Shapes Constraint Language) es un estándar del W3C para validar grafos RDF frente a formas reutilizables y mantener los datos alineados con modelos como DCAT-AP.",
+    "steps": {
+      "selectProfile": "Selecciona el perfil de validación que necesites (por ejemplo, DCAT-AP-ES).",
+      "chooseInput": "Elige tu método de entrada preferido:",
+      "directInputTitle": "Entrada directa",
+      "directInputDescription": "Pega el contenido RDF (Turtle, RDF/XML, JSON-LD) directamente en el área de texto.",
+      "fromUrlTitle": "Desde URL",
+      "fromUrlDescription": "Indica un enlace a un fichero RDF. Recuerda que algunos servidores pueden bloquear peticiones del navegador por CORS.",
+      "validate": "Haz clic en Validar para lanzar las comprobaciones SHACL.",
+      "review": "Revisa la tabla de resultados y filtra por severidad (Violación, Advertencia, Info).",
+      "export": "Exporta el informe en Turtle o CSV para compartir las evidencias de la validación.",
+      "reports": "Usa la sección de Informes para visualizar informes SHACL previamente exportados:",
+      "reportsUploadTitle": "Cargar informe",
+      "reportsUploadDescription": "Arrastra o selecciona un archivo TTL de informe SHACL para visualizar sus resultados.",
+      "reportsVisualizeTitle": "Analizar y exportar",
+      "reportsVisualizeDescription": "Explora gráficos de distribución por severidad, identifica las formas más afectadas y exporta segmentos específicos."
+    },
+    "resultsLevels": {
+      "violation": {
+        "title": "Violación",
+        "description": "Incidencias bloqueantes que deben resolverse para que el conjunto cumpla el perfil."
+      },
+      "warning": {
+        "title": "Advertencia",
+        "description": "Aspectos importantes que conviene corregir aunque no siempre rompen la conformidad."
+      },
+      "info": {
+        "title": "Info",
+        "description": "Sugerencias o notas contextuales que ayudan a mejorar la calidad del metadato."
+      }
+    },
+    "resources": {
+      "title": "Recursos",
+      "links": {
+        "w3c": "Recomendación SHACL del W3C",
+        "dcat_ap": "Documentación DCAT-AP",
+        "dcat_ap_es": "Documentación DCAT-AP-ES",
+        "nti_risp": "Documentación NTI-RISP"
+      }
+    }
+  },
+  "footer": {
+    "openSource": "Código abierto.",
+    "links": {
+      "github": "GitHub",
+      "datos": "datos.gob.es"
+    }
+  },
+  "settings": {
+    "appearance": "Apariencia",
+    "appearanceDescription": "Alterna entre tokens claros y oscuros para todo el entorno.",
+    "theme": "Tema",
+    "themeDescription": "Activa la paleta oscura en toda la interfaz.",
+    "themeNote": "La preferencia se guarda localmente; no afecta a los despliegues.",
+    "designTokens": "Design tokens",
+    "designTokensDescription": "Personaliza las variables CSS para adaptar tipografías, espaciados y paletas.",
+    "customizable": "Personalizable",
+    "tokens": {
+      "background": "Superficie base para tarjetas y contenedor.",
+      "foreground": "Color de texto por defecto en la interfaz.",
+      "primary": "Acento principal para botones y destacados.",
+      "accent": "Acento secundario usado en gradientes y chips.",
+      "border": "Color de borde suave para tarjetas y tablas.",
+      "radius": "Radio global de bordes en tarjetas y botones.",
+      "copy": "Copiar valor",
+      "copied": "Copiado",
+      "reset": "Restablecer overrides",
+      "presets": {
+        "title": "Aplica un esquema de color al instante",
+        "zen": {
+          "label": "Agua",
+          "description": "Verdes y turquesas suaves."
+        },
+        "midnight": {
+          "label": "Medianoche",
+          "description": "Paleta oscura y contrastada."
+        },
+        "citrus": {
+          "label": "Amanecer",
+          "description": "Acentos cálidos y energéticos."
+        }
+      }
+    },
+    "workspace": {
+      "title": "Herramientas del espacio de trabajo",
+      "subtitle": "Gestiona las memorias caché que quedan en este navegador.",
+      "actions": {
+        "history": {
+          "title": "Reiniciar historial de validaciones",
+          "description": "Elimina los datos de la gráfica y las estadísticas recientes."
+        },
+        "theme": {
+          "title": "Reiniciar preferencia de tema",
+          "description": "Vuelve al esquema de color del sistema y elimina el ajuste manual."
+        }
+      },
+      "run": "Ejecutar acción",
+      "feedback": {
+        "history": "Historial de validaciones borrado.",
+        "theme": "Tema sincronizado con la preferencia del sistema."
+      }
+    }
+  },
+  "profiles": {
+    "names": {
+      "dcat_ap": {
+        "2.1.1": "DCAT-AP 2.1.1"
+      },
+      "dcat_ap_es": {
+        "1.0.0": "DCAT-AP-ES 1.0.0"
+      },
+      "dcat_ap_es_hvd": {
+        "1.0.0": "DCAT-AP-ES HVD 1.0.0"
+      },
+      "nti_risp": {
+        "2013": "NTI-RISP (2013)"
+      }
+    },
+    "branches": {
+      "main": "Estable (main)",
+      "develop": "Desarrollo (develop)"
+    }
+  }
+}

@@ -1,0 +1,275 @@
+{
+  "app": {
+    "title": "SHACL Validator",
+    "tagline": "Quality assurance for DCAT-AP metadata"
+  },
+  "nav": {
+    "validator": "Validator",
+    "viewer": "Reports",
+    "guide": "Guide",
+    "settings": "Settings",
+    "language": "Language",
+    "quickAccess": "Quick access",
+    "toggleSidebar": "Toggle navigation",
+    "descriptions": {
+      "validator": "Run SHACL checks with Monaco + TanStack",
+      "viewer": "Upload TTL and explore analytics",
+      "guide": "Playbooks, checklists and examples",
+      "settings": "Themes, tokens, and deployment"
+    },
+    "stats": {
+      "title": "RDF snapshot",
+      "subtitle": "Detected resources",
+      "profileContext": "Version {{version}} · {{branch}}",
+      "datasets": "Datasets",
+      "dataServices": "Data Services",
+      "distributions": "Distributions",
+      "empty": "Paste RDF to surface quick stats here.",
+      "collapse": "Hide summary",
+      "expand": "Show RDF summary"
+    },
+    "languageNames": {
+      "es": "Español",
+      "en": "English"
+    }
+  },
+  "header": {
+    "githubAria": "GitHub Repository",
+    "github": "Open repository"
+  },
+  "command": {
+    "placeholder": "Type a command or search…",
+    "empty": "No matches. Try a different keyword.",
+    "navigation": "Navigation",
+    "open": "Open command palette"
+  },
+  "home": {
+    "title": "RDF Metadata Validator",
+    "subtitle": "Validate your metadata against standard SHACL profiles (DCAT-AP, DCAT-AP-ES, NTI-RISP) directly in your browser.",
+    "docsCta": "Read the usage guide"
+  },
+  "validator": {
+    "selectProfile": "Validation Profile",
+    "version": "Version",
+    "branch": "SHACL Branch",
+    "profileInfo": "View profile documentation",
+    "validatingAgainst": "Validating against",
+    "pasteText": "Direct Input",
+    "url": "From URL",
+    "uploadTab": "Upload",
+    "placeholder": "Paste your RDF content here (Turtle, RDF/XML, JSON-LD)...",
+    "urlPlaceholder": "https://example.com/data.ttl",
+    "corsWarning": "Note: Some servers may block requests from the browser (CORS). If validation fails, try downloading the file and pasting the content directly.",
+    "loadSample": "Load sample data",
+    "urlError": "Failed to fetch content from URL. It might be due to CORS restrictions. Try copying the content and pasting it in the \"Text Input\" tab.",
+    "workspaceTitle": "Input workspace",
+    "workspaceSubtitle": "Paste RDF, fetch from URL, or upload heavy catalogs with progress tracking.",
+    "actions": {
+      "pasteTitle": "Direct input",
+      "pasteDescription": "Write or paste RDF with Monaco and preview transformations.",
+      "urlTitle": "From URL",
+      "urlDescription": "Probe a remote catalog, inspect metadata and validate in place.",
+      "uploadTitle": "Upload",
+      "uploadDescription": "Drop huge TTL/JSON-LD files with chunked streaming and cancel options.",
+      "ready": "Ready",
+      "idle": "Idle"
+    },
+    "loadingEditor": "Loading Monaco editor…",
+    "probeUrl": "Fetch metadata",
+    "selectedFile": "Uploaded file: {{file}}",
+    "metadata": {
+      "type": "Content type",
+      "size": "Approx. size",
+      "unknown": "Unknown"
+    },
+    "uploadCancelled": "Upload cancelled",
+    "dropTitle": "Drop a TTL / RDF / JSON-LD file",
+    "dropSubtitle": "Files stay in the browser. Maximize reliability with chunked reads.",
+    "uploading": "Uploading…",
+    "cancelUpload": "Cancel",
+    "currentProfile": "Current profile",
+    "profileReadyHint": "Ready to validate",
+    "previewLabel": "Preview",
+    "jsonPreview": "JSON-LD",
+    "normalizedPreview": "Normalized TTL"
+  },
+  "common": {
+    "validate": "Validate",
+    "validating": "Validating...",
+    "or": "OR"
+  },
+  "results": {
+    "conforms": "Conforms",
+    "notConforms": "Does not conform",
+    "summary": "Violations: {{violations}}, Warnings: {{warnings}}, Info: {{infos}}",
+    "details": "Validation Details",
+    "detailsDescription": "Group duplicated findings, pin columns, and export filtered views.",
+    "noIssues": "No validation issues found.",
+    "download": "Download Report",
+    "downloadTTL": "Download as TTL",
+    "downloadCSV": "Download as CSV",
+    "totalShapes": "Total findings",
+    "documentationLink": "Documentation",
+    "affectedSingle": "1 affected resource",
+    "affectedPlural": "{{count}} affected resources",
+    "showOccurrences": "Show affected nodes",
+    "hideOccurrences": "Hide affected nodes"
+  },
+  "severity": {
+    "violation": "Error",
+    "warning": "Recommendation",
+    "info": "Info"
+  },
+  "filter": {
+    "all": "All Severities"
+  },
+  "table": {
+    "severity": "Severity",
+    "message": "Message",
+    "component": "Constraint",
+    "count": "Count",
+    "focusNode": "Focus Node",
+    "path": "Path",
+    "value": "Value"
+  },
+  "viewer": {
+    "title": "SHACL Report Viewer",
+    "subtitle": "Visualize existing SHACL validation reports (Turtle format).",
+    "import": "Import report",
+    "importDescription": "Upload TTL files or paste raw RDF, then unlock analytics and exports.",
+    "upload": "Upload file",
+    "uploadHint": "Accepted formats: .ttl, .rdf, .jsonld",
+    "paste": "Paste report content",
+    "visualize": "Visualize Report",
+    "error": "Failed to parse SHACL report. Ensure it is valid Turtle (TTL) format.",
+    "severityBreakdown": "Severity breakdown",
+    "topShapes": "Top failing shapes",
+    "topShapesHint": "Shapes and constraints with the highest number of issues.",
+    "emptyStats": "Import a report to unlock severity analytics.",
+    "emptyShapes": "Upload a SHACL report to highlight the noisiest shapes.",
+    "exportSegments": "Download segments"
+  },
+  "guide": {
+    "title": "SHACL Guide",
+    "whatIsShacl": "What is SHACL?",
+    "howToUse": "How to use this validator",
+    "understandingResults": "Understanding Results",
+    "description": "SHACL (Shapes Constraint Language) is a W3C standard that validates RDF graphs against reusable shapes so data stays aligned with models such as DCAT-AP.",
+    "steps": {
+      "selectProfile": "Select the Validation Profile you need (for example DCAT-AP-ES).",
+      "chooseInput": "Choose your preferred input method:",
+      "directInputTitle": "Direct Input",
+      "directInputDescription": "Paste RDF content (Turtle, RDF/XML, JSON-LD) directly into the text area.",
+      "fromUrlTitle": "From URL",
+      "fromUrlDescription": "Provide a link to an RDF file. Keep in mind that some servers can block browser requests because of CORS.",
+      "validate": "Click Validate to launch the SHACL checks.",
+      "review": "Review the result table and filter by severity (Violation, Warning, Info).",
+      "export": "Export the report in Turtle or CSV to share evidence of the validation run."
+    },
+    "resultsLevels": {
+      "violation": {
+        "title": "Violation",
+        "description": "Blocking issues that must be fixed for the dataset to conform."
+      },
+      "warning": {
+        "title": "Warning",
+        "description": "Important issues that should be addressed even if they might not break conformance depending on the profile."
+      },
+      "info": {
+        "title": "Info",
+        "description": "Suggestions or contextual notes that can help improve metadata quality."
+      }
+    },
+    "resources": {
+      "title": "Resources",
+      "links": {
+        "w3c": "W3C SHACL Recommendation",
+        "dcat_ap": "DCAT-AP Documentation",
+        "dcat_ap_es": "DCAT-AP-ES Documentation",
+        "nti_risp": "NTI-RISP Documentation"
+      }
+    }
+  },
+  "footer": {
+    "openSource": "Open Source.",
+    "links": {
+      "github": "GitHub",
+      "datos": "datos.gob.es"
+    }
+  },
+  "settings": {
+    "appearance": "Appearance",
+    "appearanceDescription": "Switch between light and dark tokens for the entire workspace.",
+    "theme": "Theme",
+    "themeDescription": "Toggle to apply the dark palette across the app shell.",
+    "themeNote": "Preference is stored locally so deployments stay untouched.",
+    "designTokens": "Design tokens",
+    "designTokensDescription": "Customize CSS variables to adapt typography, spacing, and palettes.",
+    "customizable": "Customizable",
+    "tokens": {
+      "background": "Base surface for cards and shell.",
+      "foreground": "Default text color across the UI.",
+      "primary": "Primary accent for buttons and highlights.",
+      "accent": "Secondary accent used in gradients and chips.",
+      "border": "Soft border color for cards and tables.",
+      "radius": "Global border radius used by cards and buttons.",
+      "copy": "Copy value",
+      "copied": "Copied",
+      "reset": "Reset overrides",
+      "presets": {
+        "title": "Apply a palette instantly",
+        "zen": {
+          "label": "Zen aqua",
+          "description": "Soft greens and teals to highlight successful validations."
+        },
+        "midnight": {
+          "label": "Midnight",
+          "description": "High-contrast dark palette for long review sessions."
+        },
+        "citrus": {
+          "label": "Citrus",
+          "description": "Warm energetic accents to call out issues quickly."
+        }
+      }
+    },
+    "workspace": {
+      "title": "Workspace tools",
+      "subtitle": "Manage the caches that stay in this browser.",
+      "actions": {
+        "history": {
+          "title": "Reset validation history",
+          "description": "Clear sparkline data and statistics stored from recent runs."
+        },
+        "theme": {
+          "title": "Reset theme preference",
+          "description": "Return to the system color scheme and drop the manual toggle."
+        }
+      },
+      "run": "Run action",
+      "feedback": {
+        "history": "Validation history cleared.",
+        "theme": "Theme preference synced with the system."
+      }
+    }
+  },
+  "profiles": {
+    "names": {
+      "dcat_ap": {
+        "2.1.1": "DCAT-AP 2.1.1"
+      },
+      "dcat_ap_es": {
+        "1.0.0": "DCAT-AP-ES 1.0.0"
+      },
+      "dcat_ap_es_hvd": {
+        "1.0.0": "DCAT-AP-ES HVD 1.0.0"
+      },
+      "nti_risp": {
+        "2013": "NTI-RISP (2013)"
+      }
+    },
+    "branches": {
+      "main": "Stable (main)",
+      "develop": "Development (develop)"
+    }
+  }
+}
