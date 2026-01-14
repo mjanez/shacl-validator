@@ -278,7 +278,7 @@
       "searchPlaceholder": "Buscar términos...",
       "noResults": "Ningún término coincide con tu búsqueda.",
       "focusNode": {
-        "term": "Nodo Foco (Focus Node)",
+        "term": "Nodo foco (Focus Node)",
         "definition": "El recurso RDF específico (identificado por URI o nodo en blanco) donde el validador encontró un problema. Revisa este nodo en tus datos para corregir la incidencia."
       },
       "shape": {
@@ -298,15 +298,15 @@
         "definition": "Un valor booleano que indica si los datos pasaron todas las restricciones (true) o tuvieron al menos una violación (false)."
       },
       "constraintComponent": {
-        "term": "Componente de Restricción",
+        "term": "Componente de restricción",
         "definition": "El tipo de regla que se verificó, como sh:minCount (ocurrencias mínimas), sh:pattern (coincidencia regex) o sh:class (verificación de tipo)."
       },
       "resultPath": {
-        "term": "Ruta del Resultado",
+        "term": "Ruta del resultado",
         "definition": "La ruta de propiedad RDF donde se encontró el problema. Por ejemplo, dcat:dataset significa que el problema está en la propiedad dcat:dataset."
       },
       "resultMessage": {
-        "term": "Mensaje del Resultado",
+        "term": "Mensaje del resultado",
         "definition": "Una explicación legible del problema. Léelo con atención—a menudo contiene pistas sobre qué valor se espera."
       }
     },
