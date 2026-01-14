@@ -147,7 +147,6 @@ class RDFService {
   private async storeToTurtle(store: Store): Promise<string> {
     return new Promise((resolve, reject) => {
       const writer = new Writer({ format: 'text/turtle' });
-      // @ts-expect-error - getQuads may not be exposed in all type versions
       const quads = store.getQuads(null, null, null, null);
       for (const quad of quads) {
         writer.addQuad(quad);

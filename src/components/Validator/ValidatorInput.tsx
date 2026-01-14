@@ -104,7 +104,6 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
 
   const storeToJsonLd = (store: Store) => {
     const graph: Record<string, Record<string, any>> = {};
-    // @ts-expect-error - getQuads may not be exposed in all type versions
     const quads = store.getQuads(null, null, null, null);
     for (const quad of quads) {
       const subject = quad.subject.value;
@@ -136,7 +135,6 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
       dataServices: new Set<string>(),
       distributions: new Set<string>()
     };
-    // @ts-expect-error - getQuads may not be exposed in all type versions
     const quads = store.getQuads(null, null, null, null);
     for (const quad of quads) {
       if (quad.predicate.value !== TYPE_IRI) continue;

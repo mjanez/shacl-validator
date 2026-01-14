@@ -135,7 +135,6 @@ class SHACLValidationService {
     const normalizedFormat = this.normalizeDataFormat(format);
     try {
       const store = await RDFService.parseRDF(content, normalizedFormat);
-      // @ts-expect-error - getQuads may not be exposed in all type versions
       const quads = store.getQuads(null, null, null, null);
       for (const quad of quads) {
         dataset.add(quad);
