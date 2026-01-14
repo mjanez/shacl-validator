@@ -155,6 +155,66 @@
     "howToUse": "How to use this validator",
     "understandingResults": "Understanding Results",
     "description": "SHACL (Shapes Constraint Language) is a W3C standard that validates RDF graphs against reusable shapes so data stays aligned with models such as DCAT-AP.",
+    "tabs": {
+      "howto": "How to Use",
+      "tools": "Select Tool",
+      "decoder": "Report Decoder",
+      "glossary": "Glossary"
+    },
+    "tools": {
+      "title": "Select Your Tool",
+      "description": "There is no 'best tool'—it depends on your profile and needs. Choose your workflow to see recommendations.",
+      "restart": "Start over",
+      "openTool": "Open tool",
+      "openDocs": "View documentation",
+      "web": {
+        "title": "Web Interfaces",
+        "description": "No installation required. Paste or upload your RDF and get instant results in your browser.",
+        "badge": "Beginner friendly"
+      },
+      "cli": {
+        "title": "Command Line Tools",
+        "description": "Powerful tools for automation, CI/CD pipelines, and batch processing of large catalogs.",
+        "badge": "Advanced"
+      },
+      "items": {
+        "thisApp": {
+          "title": "SHACL Validator (This App)",
+          "badge": "You are here",
+          "description": "Browser-based validation with DCAT-AP profiles, visual reports, and CSV/TTL export. No backend required."
+        },
+        "itb": {
+          "title": "ITB SHACL Validator",
+          "description": "Official EU validator from the Interoperability Test Bed. Supports custom SHACL shapes and multiple output formats."
+        },
+        "jena": {
+          "title": "Apache Jena (RIOT/SHACL)",
+          "description": "The Swiss army knife for RDF in Java. Powerful, robust, and standard in production environments. Requires Java."
+        },
+        "pyshacl": {
+          "title": "pySHACL",
+          "description": "Pure Python library. Easy to install with pip. Ideal if you already work with data scripts in Python."
+        },
+        "dockerPyshacl": {
+          "title": "docker-pyshacl",
+          "description": "Ready-to-use Docker image with pySHACL and DCAT-AP shapes. Perfect for CI/CD and reproducible validations."
+        }
+      }
+    },
+    "concepts": {
+      "rdf": {
+        "title": "RDF",
+        "description": "Resource Description Framework: The standard data model for metadata. Catalogs are written as RDF graphs using Turtle, JSON-LD, or RDF/XML."
+      },
+      "shacl": {
+        "title": "SHACL",
+        "description": "Shapes Constraint Language: A W3C language for validating RDF graphs against reusable shapes. Detects errors and suggestions."
+      },
+      "dcatap": {
+        "title": "DCAT-AP",
+        "description": "Data Catalog Vocabulary – Application Profile for European portals. DCAT-AP-ES is the Spanish extension with additional requirements."
+      }
+    },
     "steps": {
       "selectProfile": "Select the Validation Profile you need (for example DCAT-AP-ES).",
       "chooseInput": "Choose your preferred input method:",
@@ -164,7 +224,12 @@
       "fromUrlDescription": "Provide a link to an RDF file. Keep in mind that some servers can block browser requests because of CORS.",
       "validate": "Click Validate to launch the SHACL checks.",
       "review": "Review the result table and filter by severity (Violation, Warning, Info).",
-      "export": "Export the report in Turtle or CSV to share evidence of the validation run."
+      "export": "Export the report in Turtle or CSV to share evidence of the validation run.",
+      "reports": "Use the Reports section to visualize previously exported SHACL reports:",
+      "reportsUploadTitle": "Load report",
+      "reportsUploadDescription": "Drag or select a TTL file of a SHACL report to visualize its results.",
+      "reportsVisualizeTitle": "Analyze and export",
+      "reportsVisualizeDescription": "Explore charts by severity, identify the most affected shapes, and export specific segments."
     },
     "resultsLevels": {
       "violation": {
@@ -178,6 +243,63 @@
       "info": {
         "title": "Info",
         "description": "Suggestions or contextual notes that can help improve metadata quality."
+      }
+    },
+    "decoder": {
+      "title": "Interactive Report Decoder",
+      "description": "Click on any highlighted line to see what it means and how to fix related issues.",
+      "placeholder": "Click on a line in the report to see its explanation.",
+      "analysisTitle": "Line Analysis",
+      "tipTitle": "Pro Tip",
+      "tipContent": "Always check sh:focusNode first—it tells you exactly which resource has the problem, then look at sh:resultPath to find the missing or invalid property.",
+      "explanations": {
+        "validationReport": "This line declares the resource as a SHACL Validation Report. Every SHACL output starts with this class.",
+        "conformsFalse": "The data does NOT conform to the SHACL shapes. There is at least one violation or warning that needs attention.",
+        "validationResult": "This block represents a single validation finding—a violation, warning, or informational note.",
+        "severityViolation": "This is a VIOLATION: a mandatory constraint is broken. You must fix this before the data can be considered compliant.",
+        "severityWarning": "This is a WARNING: a recommended constraint is not met. Fix if possible, but it may not block conformance.",
+        "minCount": "The MinCountConstraintComponent means a required property is missing or doesn't have enough values.",
+        "resultMessage": "This human-readable message explains what went wrong. Read carefully for hints on how to fix the issue.",
+        "focusNode": "The Focus Node is the exact RDF resource where the problem was detected. Use this URI to locate the issue in your data.",
+        "resultPath": "The Result Path shows which property is failing (e.g., dcat:dataset). Add or correct this property on the focus node."
+      }
+    },
+    "glossary": {
+      "title": "SHACL Glossary",
+      "description": "Key terms to understand SHACL validation reports.",
+      "searchPlaceholder": "Search terms...",
+      "noResults": "No terms match your search.",
+      "focusNode": {
+        "term": "Focus Node",
+        "definition": "The specific RDF resource (identified by a URI or blank node) where the validator found a problem. Check this node in your data to fix the issue."
+      },
+      "shape": {
+        "term": "Shape",
+        "definition": "A set of constraints that define what valid data looks like. Shapes are written in SHACL and applied to RDF resources."
+      },
+      "severity": {
+        "term": "Severity",
+        "definition": "Indicates how serious a finding is: Violation (error), Warning (recommendation), or Info (suggestion)."
+      },
+      "target": {
+        "term": "Target",
+        "definition": "Specifies which RDF resources a shape applies to—typically all instances of a class (e.g., dcat:Dataset)."
+      },
+      "conforms": {
+        "term": "Conforms",
+        "definition": "A boolean value indicating whether the data passed all constraints (true) or had at least one violation (false)."
+      },
+      "constraintComponent": {
+        "term": "Constraint Component",
+        "definition": "The type of rule that was checked, such as sh:minCount (minimum occurrences), sh:pattern (regex match), or sh:class (type check)."
+      },
+      "resultPath": {
+        "term": "Result Path",
+        "definition": "The RDF property path where the issue was found. For example, dcat:dataset means the problem is in the dcat:dataset property."
+      },
+      "resultMessage": {
+        "term": "Result Message",
+        "definition": "A human-readable explanation of the problem. Read this carefully—it often contains hints about what value is expected."
       }
     },
     "resources": {
