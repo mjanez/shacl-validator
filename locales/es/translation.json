@@ -212,15 +212,15 @@
     "concepts": {
       "rdf": {
         "title": "RDF",
-        "description": "Resource Description Framework: El modelo estándar para metadatos. Los catálogos se escriben como grafos RDF usando Turtle, JSON-LD o RDF/XML."
+        "description": "**Resource Description Framework**: El modelo estándar para metadatos. Los catálogos se escriben como grafos RDF usando **Turtle**, **JSON-LD** o **RDF/XML**. Cada declaración es una _tripleta_: sujeto → predicado → objeto."
       },
       "shacl": {
         "title": "SHACL",
-        "description": "Shapes Constraint Language: Un lenguaje del W3C para validar grafos RDF contra formas reutilizables. Detecta errores y sugerencias."
+        "description": "**Shapes Constraint Language**: Lenguaje W3C para validar grafos RDF contra _formas_ reutilizables. Detecta errores y sugerencias usando componentes de restricción como `sh:minCount`, `sh:pattern` y `sh:datatype`."
       },
       "dcatap": {
         "title": "DCAT-AP",
-        "description": "Data Catalog Vocabulary – Perfil de aplicación para portales europeos. DCAT-AP-ES es la extensión española con requisitos adicionales."
+        "description": "**Data Catalog Vocabulary** – Perfil de aplicación para portales europeos. Define clases como `dcat:Catalog`, `dcat:Dataset`, `dcat:Distribution`. **DCAT-AP-ES** es la extensión española con cumplimiento NTI-RISP."
       }
     },
     "steps": {
@@ -308,6 +308,54 @@
       "resultMessage": {
         "term": "Mensaje del resultado",
         "definition": "Una explicación legible del problema. Léelo con atención—a menudo contiene pistas sobre qué valor se espera."
+      },
+      "dcatAp": {
+        "term": "DCAT-AP",
+        "definition": "**Data Catalog Vocabulary - Application Profile**. Especificación europea que estandariza metadatos para portales de datos abiertos. Garantiza interoperabilidad entre estados miembros de la UE definiendo propiedades obligatorias y recomendadas para catálogos, conjuntos de datos y distribuciones."
+      },
+      "dcatApEs": {
+        "term": "DCAT-AP-ES",
+        "definition": "Extensión española de DCAT-AP desarrollada por **datos.gob.es**. Añade requisitos nacionales como cumplimiento NTI-RISP, taxonomías específicas y propiedades adicionales para catálogos del sector público español."
+      },
+      "dcat": {
+        "term": "DCAT",
+        "definition": "**Data Catalog Vocabulary**. Estándar W3C para describir catálogos de datos y conjuntos de datos en la web. Proporciona clases como `dcat:Catalog`, `dcat:Dataset` y `dcat:Distribution` para representar estructuras de catálogo."
+      },
+      "rdf": {
+        "term": "RDF",
+        "definition": "**Resource Description Framework**. Estándar W3C para representar información como tripletas (sujeto-predicado-objeto). Base de Linked Data y tecnologías de la web semántica. Se serializa como Turtle, JSON-LD, RDF/XML, etc."
+      },
+      "rdfTriple": {
+        "term": "Tripleta RDF",
+        "definition": "La unidad básica de RDF: una declaración formada por **sujeto**, **predicado** y **objeto**. Ejemplo: `<catalogo> dcat:dataset <dataset1>` expresa que un catálogo tiene un conjunto de datos."
+      },
+      "propertyPath": {
+        "term": "Ruta de propiedad",
+        "definition": "Expresión tipo SPARQL para navegar grafos RDF. Puede usar secuencias (`/`), alternativas (`|`), inversas (`^`) y cuantificadores (`*`, `+`, `?`). SHACL usa rutas de propiedad para validar relaciones complejas."
+      },
+      "w3c": {
+        "term": "W3C",
+        "definition": "**World Wide Web Consortium**. Organización internacional de estándares que desarrolla estándares web incluyendo RDF, SPARQL, SHACL y DCAT. Las Recomendaciones W3C son especificaciones maduras y estables."
+      },
+      "nodeShape": {
+        "term": "Forma de nodo",
+        "definition": "Forma SHACL identificada por `sh:NodeShape` que aplica restricciones a recursos RDF completos. Típicamente apunta a todas las instancias de una clase (ej. todos los datasets) y valida su estructura."
+      },
+      "propertyShape": {
+        "term": "Forma de propiedad",
+        "definition": "Forma SHACL dentro de una forma de nodo que valida una propiedad específica (como `dcat:title`). Puede verificar cardinalidad (`sh:minCount`), tipos de datos (`sh:datatype`), rangos de valores y patrones."
+      },
+      "targetClass": {
+        "term": "Clase objetivo",
+        "definition": "Declaración `sh:targetClass` que especifica qué recursos RDF valida una forma. Ejemplo: `sh:targetClass dcat:Dataset` significa que la forma se aplica a todos los recursos de tipo `dcat:Dataset`."
+      },
+      "dataGraph": {
+        "term": "Grafo de datos",
+        "definition": "El grafo RDF que se está validando—tus metadatos de catálogo reales. Los procesadores SHACL comprueban si el grafo de datos cumple las restricciones definidas en el grafo de formas."
+      },
+      "shapesGraph": {
+        "term": "Grafo de formas",
+        "definition": "El grafo RDF que contiene las formas SHACL y definiciones de restricciones. Describe cómo deberían ser los datos válidos. Separado del grafo de datos que se valida."
       }
     },
     "resources": {
