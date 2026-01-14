@@ -72,4 +72,4 @@ src/
 
 ## License
 
-MIT
+[CC-BY-4.0](LICENSE) - Copyright (c) 2025 [mjanez](https://github.com/mjanez)
