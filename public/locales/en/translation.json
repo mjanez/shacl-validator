@@ -204,15 +204,15 @@
     "concepts": {
       "rdf": {
         "title": "RDF",
-        "description": "Resource Description Framework: The standard data model for metadata. Catalogs are written as RDF graphs using Turtle, JSON-LD, or RDF/XML."
+        "description": "**Resource Description Framework**: The standard model for metadata. Catalogs are written as RDF graphs using **Turtle**, **JSON-LD** or **RDF/XML**. Every statement is a _triple_: subject → predicate → object."
       },
       "shacl": {
         "title": "SHACL",
-        "description": "Shapes Constraint Language: A W3C language for validating RDF graphs against reusable shapes. Detects errors and suggestions."
+        "description": "**Shapes Constraint Language**: A W3C language for validating RDF graphs against reusable _shapes_. Detects errors and suggestions using constraint components like `sh:minCount`, `sh:pattern`, and `sh:datatype`."
       },
       "dcatap": {
         "title": "DCAT-AP",
-        "description": "Data Catalog Vocabulary – Application Profile for European portals. DCAT-AP-ES is the Spanish extension with additional requirements."
+        "description": "**Data Catalog Vocabulary** – Application profile for European portals. Defines classes like `dcat:Catalog`, `dcat:Dataset`, `dcat:Distribution`. **DCAT-AP-ES** is the Spanish extension with NTI-RISP compliance."
       }
     },
     "steps": {
@@ -261,7 +261,8 @@
         "minCount": "The MinCountConstraintComponent means a required property is missing or doesn't have enough values.",
         "resultMessage": "This human-readable message explains what went wrong. Read carefully for hints on how to fix the issue.",
         "focusNode": "The Focus Node is the exact RDF resource where the problem was detected. Use this URI to locate the issue in your data.",
-        "resultPath": "The Result Path shows which property is failing (e.g., dcat:dataset). Add or correct this property on the focus node."
+        "resultPath": "The Result Path shows which property is failing (e.g., dcat:dataset). Add or correct this property on the focus node.",
+        "value": "The sh:value field shows the actual problematic value that caused the validation to fail. Useful for understanding what specific data is incorrect."
       }
     },
     "glossary": {
@@ -300,6 +301,58 @@
       "resultMessage": {
         "term": "Result Message",
         "definition": "A human-readable explanation of the problem. Read this carefully—it often contains hints about what value is expected."
+      },
+      "dcatAp": {
+        "term": "DCAT-AP",
+        "definition": "**Data Catalog Vocabulary - Application Profile**. A European specification that standardizes metadata for open data portals. Ensures interoperability across EU member states by defining mandatory and recommended properties for catalogs, datasets, and distributions."
+      },
+      "dcatApEs": {
+        "term": "DCAT-AP-ES",
+        "definition": "The Spanish extension of DCAT-AP developed by **datos.gob.es**. Adds national requirements like NTI-RISP compliance, specific taxonomies, and additional properties for Spanish public sector data catalogs."
+      },
+      "dcat": {
+        "term": "DCAT",
+        "definition": "**Data Catalog Vocabulary**. A W3C standard for describing data catalogs and datasets on the web. Provides classes like `dcat:Catalog`, `dcat:Dataset`, and `dcat:Distribution` to represent catalog structures."
+      },
+      "rdf": {
+        "term": "RDF",
+        "definition": "**Resource Description Framework**. A W3C standard for representing information as triples (subject-predicate-object). Forms the foundation for Linked Data and semantic web technologies. Serialized as Turtle, JSON-LD, RDF/XML, etc."
+      },
+      "rdfTriple": {
+        "term": "RDF Triple",
+        "definition": "The basic unit of RDF: a statement consisting of **subject**, **predicate**, and **object**. Example: `<catalog> dcat:dataset <dataset1>` expresses that a catalog has a dataset."
+      },
+      "propertyPath": {
+        "term": "Property Path",
+        "definition": "A SPARQL-like expression for navigating RDF graphs. Can use sequences (`/`), alternatives (`|`), inverses (`^`), and quantifiers (`*`, `+`, `?`). SHACL uses property paths to validate complex relationships."
+      },
+      "w3c": {
+        "term": "W3C",
+        "definition": "**World Wide Web Consortium**. The international standards organization that develops web standards including RDF, SPARQL, SHACL, and DCAT. W3C Recommendations are mature, stable specifications."
+      },
+      "nodeShape": {
+        "term": "Node Shape",
+        "definition": "A SHACL shape identified by `sh:NodeShape` that applies constraints to entire RDF resources. Typically targets all instances of a class (e.g., all datasets) and validates their structure."
+      },
+      "propertyShape": {
+        "term": "Property Shape",
+        "definition": "A SHACL shape within a node shape that validates a specific property (like `dcat:title`). Can check cardinality (`sh:minCount`), datatypes (`sh:datatype`), value ranges, and patterns."
+      },
+      "targetClass": {
+        "term": "Target Class",
+        "definition": "A `sh:targetClass` declaration that specifies which RDF resources a shape validates. Example: `sh:targetClass dcat:Dataset` means the shape applies to all resources of type `dcat:Dataset`."
+      },
+      "dataGraph": {
+        "term": "Data Graph",
+        "definition": "The RDF graph being validated—your actual catalog metadata. SHACL processors check whether the data graph conforms to the constraints defined in the shapes graph."
+      },
+      "shapesGraph": {
+        "term": "Shapes Graph",
+        "definition": "The RDF graph containing SHACL shapes and constraint definitions. Describes what valid data should look like. Separate from the data graph being validated."
+      },
+      "value": {
+        "term": "sh:value",
+        "definition": "The actual RDF term (URI, literal, or blank node) that violated a constraint. Shows **exactly what value** caused the validation to fail. Example: `sh:value \"invalid-format\"` indicates that the string \"invalid-format\" didn't match the required pattern."
       }
     },
     "resources": {
@@ -377,13 +430,13 @@
   "profiles": {
     "names": {
       "dcat_ap": {
-        "2.1.1": "DCAT-AP 2.1.1"
+        "2.1.1": "DCAT-AP"
       },
       "dcat_ap_es": {
-        "1.0.0": "DCAT-AP-ES 1.0.0"
+        "1.0.0": "DCAT-AP-ES"
       },
       "dcat_ap_es_hvd": {
-        "1.0.0": "DCAT-AP-ES HVD 1.0.0"
+        "1.0.0": "DCAT-AP-ES HVD"
       },
       "nti_risp": {
         "2013": "NTI-RISP (2013)"

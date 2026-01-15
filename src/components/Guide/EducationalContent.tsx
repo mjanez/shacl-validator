@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, CheckCircle2, ExternalLink, Info, Lightbulb, Search, BookOpen, Shapes, Database, Terminal, Globe, RotateCcw, Code2, Sparkles } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { Button } from '../ui/button';
 import appConfig from '../../config/mqa-config.json';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
@@ -62,25 +63,31 @@ const EducationalContent: React.FC = () => {
     ];
 
     const reportLines: ReportLine[] = [
-        { id: 'l1', text: '@prefix sh: <http://www.w3.org/ns/shacl#> .', type: 'meta' },
-        { id: 'l2', text: '', type: 'spacer' },
-        { id: 'l3', text: '[', type: 'block-start' },
-        { id: 'l4', text: '  a sh:ValidationReport ;', type: 'class', explainKey: 'validationReport' },
-        { id: 'l5', text: '  sh:conforms false ;', type: 'error', explainKey: 'conformsFalse' },
-        { id: 'l6', text: '  sh:result [', type: 'block-start' },
-        { id: 'l7', text: '    a sh:ValidationResult ;', type: 'class', explainKey: 'validationResult' },
-        { id: 'l8', text: '    sh:resultSeverity sh:Violation ;', type: 'error', explainKey: 'severityViolation' },
-        { id: 'l9', text: '    sh:sourceConstraintComponent sh:MinCountConstraintComponent ;', type: 'info', explainKey: 'minCount' },
-        { id: 'l10', text: '    sh:resultMessage "Less than 1 values on dcat:dataset" ;', type: 'msg', explainKey: 'resultMessage' },
-        { id: 'l11', text: '    sh:focusNode <http://example.org/catalog> ;', type: 'focus', explainKey: 'focusNode' },
-        { id: 'l12', text: '    sh:resultPath dcat:dataset ;', type: 'path', explainKey: 'resultPath' },
-        { id: 'l13', text: '  ] ;', type: 'block-end' },
-        { id: 'l14', text: '  sh:result [', type: 'block-start' },
-        { id: 'l15', text: '    sh:resultSeverity sh:Warning ;', type: 'warning', explainKey: 'severityWarning' },
-        { id: 'l16', text: '    sh:resultMessage "Value does not match pattern" ;', type: 'msg' },
-        { id: 'l17', text: '    sh:focusNode <http://example.org/dataset/1> ;', type: 'focus' },
-        { id: 'l18', text: '  ]', type: 'block-end' },
-        { id: 'l19', text: '] .', type: 'block-end' }
+        { id: 'l1', text: '@prefix sh:   <http://www.w3.org/ns/shacl#> .', type: 'meta' },
+        { id: 'l2', text: '@prefix dcat: <http://www.w3.org/ns/dcat#> .', type: 'meta' },
+        { id: 'l3', text: '', type: 'spacer' },
+        { id: 'l4', text: '[', type: 'block-start' },
+        { id: 'l5', text: '  a                 sh:ValidationReport ;', type: 'class', explainKey: 'validationReport' },
+        { id: 'l6', text: '  sh:conforms       false ;', type: 'error', explainKey: 'conformsFalse' },
+        { id: 'l7', text: '  sh:result         [', type: 'block-start' },
+        { id: 'l8', text: '    a                              sh:ValidationResult ;', type: 'class', explainKey: 'validationResult' },
+        { id: 'l9', text: '    sh:resultSeverity              sh:Violation ;', type: 'error', explainKey: 'severityViolation' },
+        { id: 'l10', text: '    sh:sourceConstraintComponent   sh:MinCountConstraintComponent ;', type: 'info', explainKey: 'minCount' },
+        { id: 'l11', text: '    sh:focusNode                   <http://example.org/catalog> ;', type: 'focus', explainKey: 'focusNode' },
+        { id: 'l12', text: '    sh:resultPath                  dcat:dataset ;', type: 'path', explainKey: 'resultPath' },
+        { id: 'l13', text: '    sh:value                       "invalid-value" ;', type: 'warning', explainKey: 'value' },
+        { id: 'l14', text: '    sh:resultMessage               "Less than 1 values on dcat:dataset"@en', type: 'msg', explainKey: 'resultMessage' },
+        { id: 'l15', text: '  ] ;', type: 'block-end' },
+        { id: 'l16', text: '  sh:result         [', type: 'block-start' },
+        { id: 'l17', text: '    a                              sh:ValidationResult ;', type: 'class', explainKey: 'validationResult' },
+        { id: 'l18', text: '    sh:resultSeverity              sh:Warning ;', type: 'warning', explainKey: 'severityWarning' },
+        { id: 'l19', text: '    sh:sourceConstraintComponent   sh:PatternConstraintComponent ;', type: 'info' },
+        { id: 'l20', text: '    sh:focusNode                   <http://example.org/dataset/1> ;', type: 'focus' },
+        { id: 'l21', text: '    sh:resultPath                  dcat:identifier ;', type: 'path' },
+        { id: 'l22', text: '    sh:value                       "ABC-123" ;', type: 'warning' },
+        { id: 'l23', text: '    sh:resultMessage               "Value does not match pattern ^[0-9]+$"@en', type: 'msg' },
+        { id: 'l24', text: '  ]', type: 'block-end' },
+        { id: 'l25', text: '] .', type: 'block-end' }
     ];
 
     const glossaryTerms = [
@@ -91,7 +98,20 @@ const EducationalContent: React.FC = () => {
         { key: 'conforms' },
         { key: 'constraintComponent' },
         { key: 'resultPath' },
-        { key: 'resultMessage' }
+        { key: 'resultMessage' },
+        { key: 'value' },
+        { key: 'dcatAp' },
+        { key: 'dcatApEs' },
+        { key: 'dcat' },
+        { key: 'rdf' },
+        { key: 'rdfTriple' },
+        { key: 'propertyPath' },
+        { key: 'w3c' },
+        { key: 'nodeShape' },
+        { key: 'propertyShape' },
+        { key: 'targetClass' },
+        { key: 'dataGraph' },
+        { key: 'shapesGraph' }
     ];
 
     const filteredGlossary = useMemo(() => {
@@ -104,7 +124,7 @@ const EducationalContent: React.FC = () => {
     }, [glossaryFilter, t]);
 
     const getLineClasses = (line: ReportLine) => {
-        const base = 'px-2 py-0.5 rounded cursor-pointer transition-colors font-mono text-sm';
+        const base = 'px-2 py-0.5 rounded cursor-pointer transition-colors font-mono text-sm whitespace-pre';
         const selected = selectedLine?.id === line.id ? 'bg-primary/20 border-l-2 border-primary' : '';
         const hover = line.explainKey ? 'hover:bg-muted' : '';
         
@@ -136,16 +156,19 @@ const EducationalContent: React.FC = () => {
             {/* Concepts Section */}
             <div className="grid gap-4 md:grid-cols-3">
                 {concepts.map(({ key, icon: Icon, color }) => (
-                    <Card key={key} className="transition-shadow hover:shadow-md">
+                    <Card key={key} className="group cursor-pointer overflow-hidden border-2 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl">
                         <CardHeader className="pb-2">
-                            <div className={`mb-2 flex h-10 w-10 items-center justify-center rounded-lg ${color}`}>
-                                <Icon className="h-5 w-5" />
+                            <div className={`mb-2 flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 ${color}`}>
+                                <Icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
                             </div>
-                            <CardTitle className="text-lg">{t(`guide.concepts.${key}.title`)}</CardTitle>
+                            <CardTitle className="text-lg transition-colors duration-300 group-hover:text-primary">{t(`guide.concepts.${key}.title`)}</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-muted-foreground">{t(`guide.concepts.${key}.description`)}</p>
+                            <div className="prose prose-sm max-w-none text-sm text-muted-foreground dark:prose-invert">
+                                <ReactMarkdown>{t(`guide.concepts.${key}.description`)}</ReactMarkdown>
+                            </div>
                         </CardContent>
+                        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                     </Card>
                 ))}
             </div>
@@ -410,7 +433,7 @@ const EducationalContent: React.FC = () => {
                                             <div className="h-3 w-3 rounded-full bg-green-500" />
                                         </div>
                                     </div>
-                                    <div className="max-h-[400px] overflow-y-auto p-4">
+                                    <div className="max-h-[400px] overflow-y-auto p-4 font-mono">
                                         {reportLines.map((line) => (
                                             <div
                                                 key={line.id}
@@ -484,12 +507,14 @@ const EducationalContent: React.FC = () => {
                                 />
                             </div>
                             
-                            <div className="divide-y divide-border rounded-lg border">
+                            <div className="max-h-[600px] divide-y divide-border overflow-y-auto rounded-lg border">
                                 {filteredGlossary.length > 0 ? (
                                     filteredGlossary.map(({ key }) => (
                                         <div key={key} className="p-4 transition-colors hover:bg-muted/50">
                                             <dt className="font-semibold text-foreground">{t(`guide.glossary.${key}.term`)}</dt>
-                                            <dd className="mt-1 text-sm text-muted-foreground">{t(`guide.glossary.${key}.definition`)}</dd>
+                                            <dd className="prose prose-sm mt-2 max-w-none text-sm text-muted-foreground dark:prose-invert">
+                                                <ReactMarkdown>{t(`guide.glossary.${key}.definition`)}</ReactMarkdown>
+                                            </dd>
                                         </div>
                                     ))
                                 ) : (
