@@ -96,7 +96,41 @@
   "common": {
     "validate": "Validate",
     "validating": "Validating...",
-    "or": "OR"
+    "or": "OR",
+    "clear": "Clear",
+    "loading": "Loading..."
+  },
+  "profiles": {
+    "custom": {
+      "name": "Custom SHACL",
+      "description": "Use your own SHACL shapes"
+    }
+  },
+  "shacl": {
+    "manager": {
+      "title": "SHACL Shapes Manager",
+      "description": "Add one or more SHACL files to validate your RDF data. Supports paste, upload, and URL loading.",
+      "filesLoaded": "files loaded",
+      "loadedFiles": "Loaded SHACL Files",
+      "addFile": "Add SHACL File",
+      "loadUrl": "Load from URL",
+      "tabs": {
+        "paste": "Paste",
+        "upload": "Upload",
+        "url": "From URL"
+      },
+      "source": {
+        "paste": "Pasted",
+        "upload": "Uploaded",
+        "url": "From URL"
+      },
+      "namePlaceholder": "SHACL file name (optional)",
+      "pastePlaceholder": "Paste your SHACL shapes here (Turtle format)...",
+      "urlPlaceholder": "https://example.com/shapes.ttl",
+      "dropActive": "Drop SHACL file here",
+      "dropInactive": "Drag SHACL file here or click to select",
+      "dropHint": "Accepts .ttl, .rdf, .xml, .jsonld files"
+    }
   },
   "results": {
     "conforms": "Conforms",

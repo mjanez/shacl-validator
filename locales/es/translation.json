@@ -100,7 +100,70 @@
     "validate": "Validar",
     "validating": "Validando...",
     "or": "O",
-    "clear": "Limpiar"
+    "clear": "Limpiar",
+    "loading": "Cargando..."
+  },  "profiles": {
+    "custom": {
+      "name": "SHACL Personalizado",
+      "description": "Usa tus propias formas SHACL"
+    }
+  },
+  "shacl": {
+    "manager": {
+      "title": "Gestor de Formas SHACL",
+      "description": "Añade uno o más ficheros SHACL para validar tus datos RDF. Soporta pegar, subir y cargar desde URL.",
+      "filesLoaded": "ficheros cargados",
+      "loadedFiles": "Ficheros SHACL Cargados",
+      "addFile": "Añadir Fichero SHACL",
+      "loadUrl": "Cargar desde URL",
+      "tabs": {
+        "paste": "Pegar",
+        "upload": "Subir",
+        "url": "Desde URL"
+      },
+      "source": {
+        "paste": "Pegado",
+        "upload": "Subido",
+        "url": "Desde URL"
+      },
+      "namePlaceholder": "Nombre del fichero SHACL (opcional)",
+      "pastePlaceholder": "Pega tus formas SHACL aquí (formato Turtle)...",
+      "urlPlaceholder": "https://ejemplo.com/formas.ttl",
+      "dropActive": "Suelta el fichero SHACL aquí",
+      "dropInactive": "Arrastra un fichero SHACL aquí o haz clic para seleccionar",
+      "dropHint": "Acepta ficheros .ttl, .rdf, .xml, .jsonld"
+    }
+  },  "profiles": {
+    "custom": {
+      "name": "SHACL Personalizado",
+      "description": "Usa tus propias formas SHACL"
+    }
+  },
+  "shacl": {
+    "manager": {
+      "title": "Gestor de Formas SHACL",
+      "description": "Añade uno o más ficheros SHACL para validar tus datos RDF. Soporta pegar, subir y cargar desde URL.",
+      "filesLoaded": "ficheros cargados",
+      "loadedFiles": "Ficheros SHACL Cargados",
+      "addFile": "Añadir Fichero SHACL",
+      "loadUrl": "Cargar desde URL",
+      "tabs": {
+        "paste": "Pegar",
+        "upload": "Subir",
+        "url": "Desde URL"
+      },
+      "source": {
+        "paste": "Pegado",
+        "upload": "Subido",
+        "url": "Desde URL"
+      },
+      "namePlaceholder": "Nombre del fichero SHACL (opcional)",
+      "pastePlaceholder": "Pega tus formas SHACL aquí (formato Turtle)...",
+      "urlPlaceholder": "https://ejemplo.com/formas.ttl",
+      "dropActive": "Suelta el fichero SHACL aquí",
+      "dropInactive": "Arrastra un fichero SHACL aquí o haz clic para seleccionar",
+      "dropHint": "Acepta ficheros .ttl, .rdf, .xml, .jsonld"
+    }
   },
   "results": {
     "conforms": "Conforme",
