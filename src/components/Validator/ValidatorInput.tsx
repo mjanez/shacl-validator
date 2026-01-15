@@ -217,11 +217,14 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
     onValidate(payload, selectedProfile);
   };
 
-  const fetchMetadata = useCallback(async () => {
-    if (!url.trim()) return;
+  const fetchMetadata = useCallback(async (targetUrl: string) => {
+    if (!targetUrl.trim()) {
+      setUrlMeta(null);
+      return;
+    }
     setUrlError(null);
     try {
-      const headResponse = await fetch(url, { method: 'HEAD' });
+      const headResponse = await fetch(targetUrl, { method: 'HEAD' });
       if (headResponse.ok) {
         setUrlMeta({
           size: headResponse.headers.get('content-length') || undefined,
@@ -234,7 +237,7 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
     }
 
     try {
-      const response = await fetch(url, { method: 'GET' });
+      const response = await fetch(targetUrl, { method: 'GET' });
       if (!response.ok) throw new Error('Failed metadata fetch');
       setUrlMeta({
         size: response.headers.get('content-length') || undefined,
@@ -242,9 +245,21 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
       });
     } catch (error) {
       console.error(error);
-      setUrlError(t('validator.urlError'));
+      setUrlMeta(null);
     }
-  }, [url, t]);
+  }, []);
+
+  // Auto-fetch metadata when URL changes (debounced)
+  useEffect(() => {
+    if (!url.trim()) {
+      setUrlMeta(null);
+      return;
+    }
+    const timer = setTimeout(() => {
+      fetchMetadata(url);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [url, fetchMetadata]);
 
   const readFileInChunks = useCallback(
     (file: File) =>
@@ -379,16 +394,6 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
           : undefined
       },
       {
-        key: 'url' as WorkspaceMode,
-        title: t('validator.actions.urlTitle'),
-        description: t('validator.actions.urlDescription'),
-        icon: Link2,
-        active: mode === 'url',
-        status: urlMeta?.contentType
-          ? { label: urlMeta.contentType.split(';')[0], style: statusStyles.info }
-          : undefined
-      },
-      {
         key: 'upload' as WorkspaceMode,
         title: t('validator.actions.uploadTitle'),
         description: t('validator.actions.uploadDescription'),
@@ -399,6 +404,16 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
           : uploadedFileName
             ? { label: uploadedFileName, style: statusStyles.info }
             : undefined
+      },
+      {
+        key: 'url' as WorkspaceMode,
+        title: t('validator.actions.urlTitle'),
+        description: t('validator.actions.urlDescription'),
+        icon: Link2,
+        active: mode === 'url',
+        status: urlMeta?.contentType
+          ? { label: urlMeta.contentType.split(';')[0], style: statusStyles.info }
+          : undefined
       }
     ];
   }, [mode, textContent, urlMeta, uploadState, uploadedFileName, t]);
@@ -448,8 +463,8 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
           <Tabs value={mode} onValueChange={(value) => setMode(value as WorkspaceMode)}>
             <TabsList className="w-full gap-2">
               <TabsTrigger value="paste">{t('validator.pasteText')}</TabsTrigger>
-              <TabsTrigger value="url">{t('validator.url')}</TabsTrigger>
               <TabsTrigger value="upload">{t('validator.uploadTab')}</TabsTrigger>
+              <TabsTrigger value="url">{t('validator.url')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="paste" className="border-0 p-0">
@@ -467,14 +482,6 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
               <div className="space-y-4">
                 <Input type="url" placeholder={t('validator.urlPlaceholder')} value={url} onChange={(e) => setUrl(e.target.value)} disabled={isLoading} />
                 <p className="text-xs text-muted-foreground">{t('validator.corsWarning')}</p>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button variant="secondary" onClick={fetchMetadata} disabled={!url.trim()} size="sm">
-                    {t('validator.probeUrl')}
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={loadSample}>
-                    {t('validator.loadSample')}
-                  </Button>
-                </div>
                 {urlMeta && (
                   <div className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
                     <p><strong>{t('validator.metadata.type')}:</strong> {urlMeta.contentType || t('validator.metadata.unknown')}</p>
