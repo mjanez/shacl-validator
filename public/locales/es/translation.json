@@ -167,7 +167,29 @@
     "topShapesHint": "Shapes y restricciones con mayor número de incidencias.",
     "emptyStats": "Importa un informe para ver la distribución por severidades.",
     "emptyShapes": "Sube un informe SHACL para detectar los shapes con más incidencias.",
-    "exportSegments": "Descargar segmentos"
+    "exportSegments": "Descargar segmentos",
+    "tabs": {
+      "results": "Resultados",
+      "dashboard": "Dashboard"
+    },
+    "reset": "Cargar nuevo informe",
+    "resetHint": "Limpiar informe actual y cargar uno nuevo",
+    "summary": {
+      "title": "Resumen del informe",
+      "totalResults": "Total de resultados",
+      "conformance": "Conformidad",
+      "conforms": "Conforme",
+      "notConforms": "No conforme",
+      "uniqueFocusNodes": "Nodos de enfoque únicos",
+      "uniqueShapes": "Shapes únicos",
+      "uniqueProperties": "Propiedades únicas"
+    },
+    "propertyBreakdown": "Distribución por propiedad",
+    "propertyBreakdownHint": "Propiedades con más incidencias de validación.",
+    "focusNodeBreakdown": "Distribución por nodo de enfoque",
+    "focusNodeBreakdownHint": "Recursos con más incidencias de validación.",
+    "constraintBreakdown": "Desglose por tipo de restricción",
+    "constraintBreakdownHint": "Tipos de restricciones que fallan con más frecuencia."
   },
   "guide": {
     "title": "Guía SHACL",
