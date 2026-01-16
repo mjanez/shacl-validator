@@ -96,7 +96,13 @@
     "profileReadyHint": "Ready to validate",
     "previewLabel": "Preview",
     "jsonPreview": "JSON-LD",
-    "normalizedPreview": "Normalized TTL"
+    "supportedFormats": "Supported: Turtle (.ttl), N3 (.n3), RDF/XML (.rdf), JSON-LD (.jsonld)",
+    "previewEmpty": "Paste or upload RDF content to see the JSON-LD preview",
+    "copyJsonLd": "Copy JSON-LD",
+    "copied": "Copied!",
+    "jsonLdHelp": "Learn about JSON-LD",
+    "unsupportedFormatError": "Unsupported file format: {{extension}}. Only Turtle (.ttl), N3 (.n3), RDF/XML (.rdf, .xml), and JSON-LD (.jsonld, .json) are supported.",
+    "converterHint": "You can convert your file to a supported format at:"
   },
   "common": {
     "validate": "Validate",
@@ -154,7 +160,29 @@
     "topShapesHint": "Shapes and constraints with the highest number of issues.",
     "emptyStats": "Import a report to unlock severity analytics.",
     "emptyShapes": "Upload a SHACL report to highlight the noisiest shapes.",
-    "exportSegments": "Download segments"
+    "exportSegments": "Download segments",
+    "tabs": {
+      "results": "Results",
+      "dashboard": "Dashboard"
+    },
+    "reset": "Load new report",
+    "resetHint": "Clear current report and load a new one",
+    "summary": {
+      "title": "Report Summary",
+      "totalResults": "Total results",
+      "conformance": "Conformance",
+      "conforms": "Conforms",
+      "notConforms": "Does not conform",
+      "uniqueFocusNodes": "Unique focus nodes",
+      "uniqueShapes": "Unique shapes",
+      "uniqueProperties": "Unique properties"
+    },
+    "propertyBreakdown": "Property path distribution",
+    "propertyBreakdownHint": "Properties with the most validation issues.",
+    "focusNodeBreakdown": "Focus node distribution",
+    "focusNodeBreakdownHint": "Resources with the most validation issues.",
+    "constraintBreakdown": "Constraint component breakdown",
+    "constraintBreakdownHint": "Types of constraints that fail most frequently."
   },
   "guide": {
     "title": "SHACL Guide",
