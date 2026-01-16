@@ -44,11 +44,16 @@
     "open": "Abrir paleta de comandos"
   },
   "home": {
-    "title": "Validador de Metadatos RDF",
+    "title": "Validador de metadatos RDF",
     "subtitle": "Valida tus metadatos contra perfiles SHACL estándar (DCAT-AP, DCAT-AP-ES, NTI-RISP) directamente en el navegador.",
     "docsCta": "Leer la guía de uso"
   },
   "validator": {
+    "validationMode": "Modo de validación",
+    "mode": {
+      "predefined": "Perfiles estándar",
+      "custom": "SHACL personalizado"
+    },
     "selectProfile": "Perfil de validación",
     "version": "Versión",
     "branch": "Rama SHACL",
@@ -102,68 +107,6 @@
     "or": "O",
     "clear": "Limpiar",
     "loading": "Cargando..."
-  },  "profiles": {
-    "custom": {
-      "name": "SHACL Personalizado",
-      "description": "Usa tus propias formas SHACL"
-    }
-  },
-  "shacl": {
-    "manager": {
-      "title": "Gestor de Formas SHACL",
-      "description": "Añade uno o más ficheros SHACL para validar tus datos RDF. Soporta pegar, subir y cargar desde URL.",
-      "filesLoaded": "ficheros cargados",
-      "loadedFiles": "Ficheros SHACL Cargados",
-      "addFile": "Añadir Fichero SHACL",
-      "loadUrl": "Cargar desde URL",
-      "tabs": {
-        "paste": "Pegar",
-        "upload": "Subir",
-        "url": "Desde URL"
-      },
-      "source": {
-        "paste": "Pegado",
-        "upload": "Subido",
-        "url": "Desde URL"
-      },
-      "namePlaceholder": "Nombre del fichero SHACL (opcional)",
-      "pastePlaceholder": "Pega tus formas SHACL aquí (formato Turtle)...",
-      "urlPlaceholder": "https://ejemplo.com/formas.ttl",
-      "dropActive": "Suelta el fichero SHACL aquí",
-      "dropInactive": "Arrastra un fichero SHACL aquí o haz clic para seleccionar",
-      "dropHint": "Acepta ficheros .ttl, .rdf, .xml, .jsonld"
-    }
-  },  "profiles": {
-    "custom": {
-      "name": "SHACL Personalizado",
-      "description": "Usa tus propias formas SHACL"
-    }
-  },
-  "shacl": {
-    "manager": {
-      "title": "Gestor de Formas SHACL",
-      "description": "Añade uno o más ficheros SHACL para validar tus datos RDF. Soporta pegar, subir y cargar desde URL.",
-      "filesLoaded": "ficheros cargados",
-      "loadedFiles": "Ficheros SHACL Cargados",
-      "addFile": "Añadir Fichero SHACL",
-      "loadUrl": "Cargar desde URL",
-      "tabs": {
-        "paste": "Pegar",
-        "upload": "Subir",
-        "url": "Desde URL"
-      },
-      "source": {
-        "paste": "Pegado",
-        "upload": "Subido",
-        "url": "Desde URL"
-      },
-      "namePlaceholder": "Nombre del fichero SHACL (opcional)",
-      "pastePlaceholder": "Pega tus formas SHACL aquí (formato Turtle)...",
-      "urlPlaceholder": "https://ejemplo.com/formas.ttl",
-      "dropActive": "Suelta el fichero SHACL aquí",
-      "dropInactive": "Arrastra un fichero SHACL aquí o haz clic para seleccionar",
-      "dropHint": "Acepta ficheros .ttl, .rdf, .xml, .jsonld"
-    }
   },
   "results": {
     "conforms": "Conforme",
@@ -266,9 +209,17 @@
           "title": "pySHACL",
           "description": "Librería Python pura. Fácil de instalar con pip. Ideal si ya trabajas con scripts de datos en Python."
         },
-        "dockerPyshacl": {
-          "title": "docker-pyshacl",
-          "description": "Imagen Docker lista con pySHACL y shapes DCAT-AP. Perfecta para CI/CD y validaciones reproducibles."
+        "easyRdfEndpoint": {
+          "title": "easy-rdf-endpoint",
+          "description": "Endpoint RDF dockerizado que simplifica el despliegue de catálogos, proporciona SPARQL endpoint e incorpora interfaces de validación semántica/sintáctica."
+        },
+        "shaclPlay": {
+          "title": "SHACL Play!",
+          "description": "Kit completo de herramientas SHACL: validación, generación de documentación y creación de diagramas. Usa TopBraid SHACL API."
+        },
+        "metadataQuality": {
+          "title": "Metadata Quality React",
+          "description": "Dashboard interactivo para analizar la calidad de metadatos (MQA) con cuadros de mandos, métricas e informes exportables."
         }
       }
     },
@@ -516,6 +467,38 @@
     "branches": {
       "main": "Estable (main)",
       "develop": "Desarrollo (develop)"
+    },
+    "manager": {
+      "title": "Gestor de Formas SHACL Personalizadas",
+      "description": "Sube, pega o carga ficheros de formas SHACL desde URLs para definir tus reglas de validación",
+      "filesLoaded": "ficheros cargados",
+      "loadedFiles": "Ficheros cargados",
+      "file": "Fichero",
+      "addFile": "Añadir fichero",
+      "clear": "Limpiar",
+      "loading": "Cargando",
+      "loadUrl": "Cargar desde URL",
+      "tabs": {
+        "paste": "Pegar",
+        "upload": "Subir",
+        "url": "Desde URL"
+      },
+      "source": {
+        "paste": "Pegado",
+        "upload": "Subido",
+        "url": "URL"
+      },
+      "pastePlaceholder": "Pega tus formas SHACL aquí (formato Turtle)...",
+      "urlPlaceholder": "https://ejemplo.gob.es/formas.ttl",
+      "pasteHint": "Pega formas SHACL en formato Turtle, RDF/XML o JSON-LD",
+      "urlHint": "Introduce la URL de un fichero de formas SHACL. Nota: Pueden aplicarse restricciones CORS.",
+      "uploadHint": "Soporta ficheros .ttl, .rdf, .xml, .n3, .jsonld",
+      "dragDrop": "Arrastra y suelta ficheros aquí",
+      "browseFiles": "Explorar ficheros",
+      "dropActive": "Suelta los ficheros aquí",
+      "dropInactive": "Arrastra ficheros SHACL aquí o haz clic para seleccionar",
+      "dropHint": "Soporta múltiples ficheros",
+      "fileLoaded": "Fichero cargado correctamente"
     }
   }
 }
