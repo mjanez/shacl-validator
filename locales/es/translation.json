@@ -138,7 +138,7 @@
     "message": "Mensaje",
     "component": "Restricción",
     "count": "Recuento",
-    "focusNode": "Nodo foco",
+    "focusNode": "nodo de enfoque",
     "path": "Ruta",
     "value": "Valor"
   },
@@ -273,18 +273,18 @@
       "placeholder": "Haz clic en una línea del informe para ver su explicación.",
       "analysisTitle": "Análisis de la línea",
       "tipTitle": "Consejo",
-      "tipContent": "Revisa primero sh:focusNode —te indica exactamente qué recurso tiene el problema; luego mira sh:resultPath para encontrar la propiedad que falta o es inválida.",
+      "tipContent": "Revisa primero `sh:focusNode`—te indica **exactamente qué recurso** tiene el problema; luego mira `sh:resultPath` para encontrar la **propiedad que falta o es inválida**.",
       "explanations": {
-        "validationReport": "Esta línea declara el recurso como un informe de validación SHACL. Toda salida SHACL comienza con esta clase.",
-        "conformsFalse": "Los datos NO cumplen con las formas SHACL. Hay al menos una violación o advertencia que requiere atención.",
-        "validationResult": "Este bloque representa un hallazgo individual de validación—una violación, advertencia o nota informativa.",
-        "severityViolation": "Esto es una VIOLACIÓN: una restricción obligatoria no se cumple. Debes corregirlo para que los datos se consideren conformes.",
-        "severityWarning": "Esto es una ADVERTENCIA: una restricción recomendada no se cumple. Corrígela si es posible, aunque puede no bloquear la conformidad.",
-        "minCount": "MinCountConstraintComponent significa que falta una propiedad requerida o no tiene suficientes valores.",
-        "resultMessage": "Este mensaje legible explica qué salió mal. Léelo con atención para obtener pistas sobre cómo corregir el problema.",
-        "focusNode": "El nodo foco es el recurso RDF exacto donde se detectó el problema. Usa esta URI para localizar la incidencia en tus datos.",
-        "resultPath": "La ruta del resultado muestra qué propiedad está fallando (ej. dcat:dataset). Añade o corrige esta propiedad en el nodo foco.",
-        "value": "El campo sh:value muestra el valor problemático real que causó el fallo de validación. Útil para entender qué dato específico es incorrecto."
+        "validationReport": "Esta línea declara el recurso como un **Informe de Validación SHACL**. Toda salida SHACL comienza con la clase `sh:ValidationReport`.",
+        "conformsFalse": "Los datos **NO cumplen** con las formas SHACL (`sh:conforms false`). Hay al menos una violación o advertencia que requiere atención.",
+        "validationResult": "Este bloque representa un **hallazgo individual** de validación (`sh:ValidationResult`)—una violación, advertencia o nota informativa.",
+        "severityViolation": "Esto es una **VIOLACIÓN** (`sh:Violation`): una **restricción obligatoria** no se cumple. Debes corregirlo para que los datos se consideren conformes.",
+        "severityWarning": "Esto es una **ADVERTENCIA** (`sh:Warning`): una **restricción recomendada** no se cumple. Corrígela si es posible, aunque puede no bloquear la conformidad.",
+        "minCount": "El `MinCountConstraintComponent` significa que **falta una propiedad requerida** o no tiene suficientes valores. Revisa `sh:minCount` en la definición de la forma.",
+        "resultMessage": "Este **mensaje legible** (`sh:resultMessage`) explica qué salió mal. Léelo con atención para obtener pistas sobre cómo corregir el problema.",
+        "focusNode": "El **nodo de enfoque** (`sh:focusNode`) es el **recurso RDF exacto** donde se detectó el problema. Usa esta URI para localizar la incidencia en tus datos.",
+        "resultPath": "La **ruta del resultado** (`sh:resultPath`) muestra **qué propiedad** está fallando (ej. `dcat:dataset`). Añade o corrige esta propiedad en el nodo de enfoque.",
+        "value": "El campo `sh:value` muestra el **valor problemático real** que causó el fallo de validación. Útil para entender qué dato específico es incorrecto."
       }
     },
     "glossary": {
@@ -293,7 +293,7 @@
       "searchPlaceholder": "Buscar términos...",
       "noResults": "Ningún término coincide con tu búsqueda.",
       "focusNode": {
-        "term": "Nodo foco (Focus Node)",
+        "term": "nodo de enfoque (Focus Node)",
         "definition": "El recurso RDF específico (identificado por URI o nodo en blanco) donde el validador encontró un problema. Revisa este nodo en tus datos para corregir la incidencia."
       },
       "shape": {
