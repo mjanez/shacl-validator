@@ -2,8 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState, Suspense } fr
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
-import { ValidationProfile, ProfileSelection } from '../../types';
+import { ValidationProfile, ProfileSelection, CustomSHACLFile, ValidationMode } from '../../types';
 import ProfileSelector from './ProfileSelector';
+import SHACLManager from './SHACLManager';
+import ValidationModeSelector from './ValidationModeSelector';
 import mqaConfig from '../../config/mqa-config.json';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Button } from '../ui/button';
@@ -12,11 +14,12 @@ import { Textarea } from '../ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Progress } from '../ui/progress';
 import { cn } from '../../lib/utils';
-import { AlertTriangle, CloudUpload, Link2, Type, Loader2, FileText, X } from 'lucide-react';
+import { AlertTriangle, CloudUpload, Link2, Type, Loader2, FileText, X, Info } from 'lucide-react';
 import RDFService from '../../services/RDFService';
 import { Store } from 'n3';
 import MonacoWorkspace from './MonacoWorkspace';
 import { useLayout } from '../layout/Layout';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 interface ValidatorInputProps {
   onValidate: (content: string, profile: ProfileSelection) => void;
@@ -50,8 +53,10 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
   const [selectedProfile, setSelectedProfile] = useState<ProfileSelection>({
     profile: 'dcat_ap_es' as ValidationProfile,
     version: '1.0.0',
-    branch: 'main'
+    branch: 'main',
+    mode: 'predefined'
   });
+  const [customShaclFiles, setCustomShaclFiles] = useState<CustomSHACLFile[]>([]);
   const uploadCancelledRef = useRef(false);
   const [rdfCounts, setRdfCounts] = useState(defaultRdfCounts);
 
@@ -82,6 +87,15 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
     const processContent = async () => {
       try {
         const format = RDFService.detectFormat(textContent);
+        
+        // JSON-LD preview is not supported, skip it (validation will handle conversion)
+        if (format === 'application/ld+json' || format === 'application/json') {
+          setNormalizedContent('');
+          setJsonPreview('');
+          setRdfCounts({ ...defaultRdfCounts });
+          return;
+        }
+        
         const store = await RDFService.parseRDF(textContent, format);
         if (isCancelled) return;
         const normalized = await RDFService.normalizeToTurtle(textContent, { format });
@@ -206,15 +220,22 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
     if (mode !== 'paste' || !rdfCounts.hasData) {
       try {
         const statsFormat = detectedFormat || RDFService.detectFormat(payload, formatHints.url, formatHints.contentType);
-        const store = await RDFService.parseRDF(payload, statsFormat);
-        const counts = computeRdfCounts(store);
-        setRdfCounts({ ...counts, hasData: true });
+        // Skip parsing for stats if it's JSON-LD (will be normalized anyway)
+        if (statsFormat !== 'application/ld+json') {
+          const store = await RDFService.parseRDF(payload, statsFormat);
+          const counts = computeRdfCounts(store);
+          setRdfCounts({ ...counts, hasData: true });
+        }
       } catch (error) {
         console.warn('Failed to derive RDF stats', error);
       }
     }
 
-    onValidate(payload, selectedProfile);
+    const validationProfile: ProfileSelection = {
+      ...selectedProfile,
+      customShacl: selectedProfile.mode === 'custom' ? customShaclFiles : undefined
+    };
+    onValidate(payload, validationProfile);
   };
 
   const fetchMetadata = useCallback(async (targetUrl: string) => {
@@ -323,6 +344,19 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
     [readFileInChunks]
   );
 
+  const onDropRejected = useCallback((fileRejections: any[]) => {
+    if (fileRejections.length > 0) {
+      const rejection = fileRejections[0];
+      const fileName = rejection.file.name;
+      const fileExt = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
+      setUploadState({
+        progress: 0,
+        isUploading: false,
+        error: t('validator.unsupportedFormatError', { extension: fileExt })
+      });
+    }
+  }, [t]);
+
   const clearFile = useCallback(() => {
     setTextContent('');
     setUploadedFileName(null);
@@ -336,11 +370,14 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
-      'text/*': ['.ttl', '.rdf', '.nt', '.nq'],
+      'text/turtle': ['.ttl'],
+      'text/n3': ['.n3'],
+      'application/rdf+xml': ['.rdf', '.xml'],
       'application/ld+json': ['.jsonld', '.json']
     },
     multiple: false,
-    onDropAccepted: onDrop
+    onDropAccepted: onDrop,
+    onDropRejected: onDropRejected
   });
 
   const loadSample = () => {
@@ -420,15 +457,30 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
 
   const isValidateDisabled = useMemo(() => {
     if (isLoading) return true;
+    if (selectedProfile.mode === 'custom' && customShaclFiles.length === 0) return true;
     if (mode === 'paste') return !textContent.trim();
     if (mode === 'url') return !url.trim();
     if (mode === 'upload') return !textContent.trim();
     return true;
-  }, [mode, textContent, url, isLoading]);
+  }, [mode, textContent, url, isLoading, selectedProfile.mode, customShaclFiles.length]);
+
+  const handleModeChange = (newMode: ValidationMode) => {
+    setSelectedProfile(prev => ({ ...prev, mode: newMode }));
+  };
 
   return (
     <div className="space-y-6">
-      <ProfileSelector selectedProfile={selectedProfile} onProfileChange={setSelectedProfile} disabled={isLoading} />
+      <ValidationModeSelector 
+        mode={selectedProfile.mode} 
+        onChange={handleModeChange}
+        disabled={isLoading}
+      />
+
+      {selectedProfile.mode === 'predefined' ? (
+        <ProfileSelector selectedProfile={selectedProfile} onProfileChange={setSelectedProfile} disabled={isLoading} />
+      ) : (
+        <SHACLManager shaclFiles={customShaclFiles} onChange={setCustomShaclFiles} />
+      )}
 
       <Card>
         <CardHeader>
@@ -481,7 +533,23 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
             <TabsContent value="url" className="border-0 p-0">
               <div className="space-y-4">
                 <Input type="url" placeholder={t('validator.urlPlaceholder')} value={url} onChange={(e) => setUrl(e.target.value)} disabled={isLoading} />
-                <p className="text-xs text-muted-foreground">{t('validator.corsWarning')}</p>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button className="inline-flex items-center gap-1 hover:text-foreground transition-colors">
+                          <Info className="h-3.5 w-3.5" />
+                          <span className="sr-only">{t('validator.supportedFormats')}</span>
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">{t('validator.supportedFormats')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <span className="text-muted-foreground/60">|</span>
+                  <span>{t('validator.corsWarning')}</span>
+                </div>
                 {urlMeta && (
                   <div className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
                     <p><strong>{t('validator.metadata.type')}:</strong> {urlMeta.contentType || t('validator.metadata.unknown')}</p>
@@ -556,27 +624,63 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
                   )}
                 </div>
               ) : (
-                <div
-                  {...getRootProps()}
-                  className={cn(
-                    'cursor-pointer rounded-2xl border-2 border-dashed transition-colors',
-                    isDragActive
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border/70 hover:border-primary/50 hover:bg-muted/30'
-                  )}
-                >
-                  <input {...getInputProps()} />
-                  <div className="flex flex-col items-center gap-4 px-6 py-12 text-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-                      <CloudUpload className="h-8 w-8 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-base font-medium text-foreground">
-                        {isDragActive ? t('validator.dropActive') : t('validator.dropInactive')}
-                      </p>
-                      <p className="mt-1 text-sm text-muted-foreground">{t('validator.dropSubtitle')}</p>
+                <div className="space-y-4">
+                  <div
+                    {...getRootProps()}
+                    className={cn(
+                      'cursor-pointer rounded-2xl border-2 border-dashed transition-colors',
+                      isDragActive
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border/70 hover:border-primary/50 hover:bg-muted/30'
+                    )}
+                  >
+                    <input {...getInputProps()} />
+                    <div className="flex flex-col items-center gap-4 px-6 py-12 text-center">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+                        <CloudUpload className="h-8 w-8 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-base font-medium text-foreground">
+                          {isDragActive ? t('validator.dropActive') : t('validator.dropInactive')}
+                        </p>
+                        <p className="mt-1 text-sm text-muted-foreground">{t('validator.dropSubtitle')}</p>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button className="mt-2 inline-flex items-center gap-1 text-xs text-muted-foreground/80 hover:text-muted-foreground transition-colors">
+                                <Info className="h-3.5 w-3.5" />
+                                <span className="sr-only">{t('validator.supportedFormats')}</span>
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs">{t('validator.supportedFormats')}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                     </div>
                   </div>
+                  {uploadState.error && (
+                    <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium text-destructive">{uploadState.error}</p>
+                          <p className="text-xs text-destructive/80">
+                            {t('validator.converterHint')}{' '}
+                            <a
+                              href="https://www.easyrdf.org/converter"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline hover:text-destructive"
+                            >
+                              EasyRDF Converter
+                            </a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </TabsContent>
@@ -586,13 +690,18 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t('validator.currentProfile')}</p>
               <p className="font-semibold text-foreground">
-                {t(`profiles.names.${selectedProfile.profile}.${selectedProfile.version}`, { defaultValue: selectedProfile.profile })} · {selectedProfile.branch}
+                {selectedProfile.mode === 'custom' 
+                  ? `${t('validator.mode.custom')} (${customShaclFiles.length} ${customShaclFiles.length === 1 ? 'file' : 'files'})`
+                  : `${t(`profiles.names.${selectedProfile.profile}.${selectedProfile.version}`, { defaultValue: selectedProfile.profile })} · ${selectedProfile.branch}`
+                }
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="ghost" onClick={loadSample} disabled={isLoading}>
-                {t('validator.loadSample')}
-              </Button>
+              {selectedProfile.mode === 'predefined' && (
+                <Button variant="ghost" onClick={loadSample} disabled={isLoading}>
+                  {t('validator.loadSample')}
+                </Button>
+              )}
               <Button onClick={handleValidate} disabled={isValidateDisabled} className="min-w-[160px]">
                 {isLoading ? (
                   <>

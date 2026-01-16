@@ -345,6 +345,38 @@ const EducationalContent: React.FC = () => {
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            {/* Metadata Quality React */}
+                                            <div className="rounded-xl border border-border p-5 transition-colors hover:bg-muted/30">
+                                                <div className="flex items-start gap-4">
+                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                                        <Database className="h-5 w-5" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h4 className="font-semibold">{t('guide.tools.items.metadataQuality.title')}</h4>
+                                                        <p className="mt-1 text-sm text-muted-foreground">{t('guide.tools.items.metadataQuality.description')}</p>
+                                                        <a href="https://metadata-quality.mjanez.dev/" target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                                                            {t('guide.tools.openTool')} <ExternalLink className="h-3 w-3" />
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* SHACL Play! */}
+                                            <div className="rounded-xl border border-border p-5 transition-colors hover:bg-muted/30">
+                                                <div className="flex items-start gap-4">
+                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+                                                        <Shapes className="h-5 w-5" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h4 className="font-semibold">{t('guide.tools.items.shaclPlay.title')}</h4>
+                                                        <p className="mt-1 text-sm text-muted-foreground">{t('guide.tools.items.shaclPlay.description')}</p>
+                                                        <a href="https://shacl-play.sparna.fr/play/" target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                                                            {t('guide.tools.openTool')} <ExternalLink className="h-3 w-3" />
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
 
@@ -388,19 +420,19 @@ const EducationalContent: React.FC = () => {
                                                 </div>
                                             </div>
 
-                                            {/* docker-pyshacl */}
+                                            {/* easy-rdf-endpoint */}
                                             <div className="rounded-xl border border-border p-5 transition-colors hover:bg-muted/30">
                                                 <div className="flex items-start gap-4">
                                                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400">
                                                         <Terminal className="h-5 w-5" />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <h4 className="font-semibold">{t('guide.tools.items.dockerPyshacl.title')}</h4>
-                                                        <p className="mt-1 text-sm text-muted-foreground">{t('guide.tools.items.dockerPyshacl.description')}</p>
+                                                        <h4 className="font-semibold">{t('guide.tools.items.easyRdfEndpoint.title')}</h4>
+                                                        <p className="mt-1 text-sm text-muted-foreground">{t('guide.tools.items.easyRdfEndpoint.description')}</p>
                                                         <div className="mt-3 overflow-hidden rounded-lg bg-slate-900 p-3 font-mono text-xs text-slate-100">
-                                                            <span className="text-green-400">$</span> docker run -v ./data:/data mjanez/pyshacl ...
+                                                            <span className="text-green-400">$</span> docker-compose up -d
                                                         </div>
-                                                        <a href="https://github.com/mjanez/docker-pyshacl" target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                                                        <a href="https://github.com/mjanez/easy-rdf-endpoint" target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline">
                                                             {t('guide.tools.openDocs')} <ExternalLink className="h-3 w-3" />
                                                         </a>
                                                     </div>
@@ -461,9 +493,9 @@ const EducationalContent: React.FC = () => {
                                                 <div className="rounded-lg bg-muted/50 p-3 font-mono text-xs">
                                                     {selectedLine.text}
                                                 </div>
-                                                <p className="text-sm text-muted-foreground">
+                                                <ReactMarkdown className="text-sm text-muted-foreground prose-code:text-foreground prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-strong:font-semibold prose-strong:text-foreground">
                                                     {t(`guide.decoder.explanations.${selectedLine.explainKey}`)}
-                                                </p>
+                                                </ReactMarkdown>
                                             </div>
                                         ) : (
                                             <div className="text-center text-muted-foreground">
@@ -474,12 +506,14 @@ const EducationalContent: React.FC = () => {
                                     </div>
 
                                     {/* Pro Tip */}
-                                    <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950/50">
+                                    <div className="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950/50">
                                         <div className="flex items-start gap-3">
-                                            <Lightbulb className="mt-0.5 h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                            <Lightbulb className="mt-0.5 h-5 w-5 text-green-600 dark:text-green-400" />
                                             <div>
-                                                <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-300">{t('guide.decoder.tipTitle')}</h4>
-                                                <p className="mt-1 text-sm text-blue-700 dark:text-blue-400">{t('guide.decoder.tipContent')}</p>
+                                                <h4 className="text-sm font-semibold text-green-800 dark:text-green-300">{t('guide.decoder.tipTitle')}</h4>
+                                                <ReactMarkdown className="mt-1 text-sm text-green-700 dark:text-green-400 prose-code:text-green-800 dark:prose-code:text-green-300 prose-code:bg-green-100 dark:prose-code:bg-green-900/50 prose-code:px-1 prose-code:rounded">
+                                                    {t('guide.decoder.tipContent')}
+                                                </ReactMarkdown>
                                             </div>
                                         </div>
                                     </div>

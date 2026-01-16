@@ -24,17 +24,39 @@ const AppRouter: React.FC = () => {
     setReport(null);
     const normalizedLanguage = (i18n.language || 'es').split('-')[0];
     try {
+      // Extract SHACL content strings from custom files if mode is custom
+      const customShaclContents = profile.mode === 'custom' && profile.customShacl 
+        ? profile.customShacl.map(file => file.content)
+        : undefined;
+      
       const result = await SHACLValidationService.validateRDF(
         content,
         profile.profile,
         'text/turtle',
         normalizedLanguage,
-        profile.branch
+        profile.branch,
+        customShaclContents,
+        profile.mode
       );
       setReport(result);
     } catch (error) {
       console.error('Validation error:', error);
-      // Handle error display
+      // Show error to user
+      const errorMsg = error instanceof Error ? error.message : 'Unknown validation error';
+      setReport({
+        profile: profile.profile,
+        conforms: false,
+        totalViolations: 1,
+        violations: [{
+          severity: 'Violation',
+          message: [{ text: errorMsg, lang: normalizedLanguage }],
+          sourceConstraintComponent: 'system:ParseError',
+          sourceShape: 'system:ParseError'
+        }],
+        warnings: [],
+        infos: [],
+        timestamp: new Date().toISOString()
+      });
     } finally {
       setIsLoading(false);
     }
