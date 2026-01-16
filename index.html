@@ -2,8 +2,85 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SHACL validator and report viewer for DCAT-AP, DCAT-AP-ES, and NTI-RISP" />
+    <meta name="keywords" content="SHACL, RDF, DCAT-AP, DCAT-AP-ES, NTI-RISP, validator, metadata, open data, linked data, semantic web" />
+    <meta name="author" content="mjanez" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://shacl-validator.mjanez.dev/" />
+    <meta property="og:title" content="SHACL Validator - RDF Metadata Validation" />
+    <meta property="og:description" content="Browser-based SHACL validator for DCAT-AP, DCAT-AP-ES, and NTI-RISP profiles. Validate RDF metadata with instant visual reports." />
+    <meta property="og:image" content="https://shacl-validator.mjanez.dev/favicon.svg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://shacl-validator.mjanez.dev/" />
+    <meta property="twitter:title" content="SHACL Validator - RDF Metadata Validation" />
+    <meta property="twitter:description" content="Browser-based SHACL validator for DCAT-AP, DCAT-AP-ES, and NTI-RISP profiles. Validate RDF metadata with instant visual reports." />
+    <meta property="twitter:image" content="https://shacl-validator.mjanez.dev/favicon.svg" />
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "SHACL Validator",
+      "alternateName": "RDF Metadata SHACL Validator",
+      "url": "https://shacl-validator.mjanez.dev/",
+      "description": "Browser-based SHACL validation tool for RDF metadata. Supports DCAT-AP, DCAT-AP-ES, and NTI-RISP profiles. Validate, visualize, and export validation reports without backend infrastructure.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any (Web Browser)",
+      "browserRequirements": "Requires JavaScript. Works with modern browsers (Chrome, Firefox, Safari, Edge).",
+      "softwareVersion": "1.0.0",
+      "datePublished": "2024-12-01",
+      "dateModified": "2026-01-14",
+      "creator": {
+        "@type": "Person",
+        "name": "Manuel Jánez",
+        "url": "https://mjanez.dev"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Manuel Jánez",
+        "url": "https://mjanez.dev"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "featureList": [
+        "SHACL validation in browser",
+        "DCAT-AP, DCAT-AP-ES, NTI-RISP profiles",
+        "Monaco editor with syntax highlighting",
+        "Interactive report decoder",
+        "Export to Turtle and CSV",
+        "Multilingual support (EN/ES)",
+        "Dark mode",
+        "No backend required"
+      ],
+      "screenshot": "https://shacl-validator.mjanez.dev/favicon.svg",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "inLanguage": ["en", "es"],
+      "keywords": "SHACL, RDF, DCAT-AP, DCAT-AP-ES, NTI-RISP, validator, metadata validation, open data, linked data, semantic web, W3C",
+      "isAccessibleForFree": true,
+      "potentialAction": {
+        "@type": "UseAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://shacl-validator.mjanez.dev/",
+          "actionPlatform": [
+            "http://schema.org/DesktopWebPlatform",
+            "http://schema.org/MobileWebPlatform"
+          ]
+        }
+      }
+    }
+    </script>
+    
     <title>SHACL Validator</title>
   </head>
   <body>

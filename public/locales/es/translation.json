@@ -163,6 +163,66 @@
     "howToUse": "Cómo usar el validador",
     "understandingResults": "Entendiendo los resultados",
     "description": "SHACL (Shapes Constraint Language) es un estándar del W3C para validar grafos RDF frente a formas reutilizables y mantener los datos alineados con modelos como DCAT-AP.",
+    "tabs": {
+      "howto": "Cómo Usar",
+      "tools": "Elegir Herramienta",
+      "decoder": "Decodificador",
+      "glossary": "Glosario"
+    },
+    "tools": {
+      "title": "Selecciona tu Herramienta",
+      "description": "No existe una 'mejor herramienta', depende de tu perfil y necesidades. Elige tu flujo de trabajo para ver recomendaciones.",
+      "restart": "Volver a empezar",
+      "openTool": "Abrir herramienta",
+      "openDocs": "Ver documentación",
+      "web": {
+        "title": "Interfaces Web",
+        "description": "Sin instalación. Pega o sube tu RDF y obtén resultados instantáneos en el navegador.",
+        "badge": "Para principiantes"
+      },
+      "cli": {
+        "title": "Herramientas de Línea de Comandos",
+        "description": "Herramientas potentes para automatización, pipelines CI/CD y procesamiento masivo de catálogos.",
+        "badge": "Avanzado"
+      },
+      "items": {
+        "thisApp": {
+          "title": "SHACL Validator (Esta App)",
+          "badge": "Estás aquí",
+          "description": "Validación en el navegador con perfiles DCAT-AP, informes visuales y exportación CSV/TTL. Sin backend."
+        },
+        "itb": {
+          "title": "ITB SHACL Validator",
+          "description": "Validador oficial de la UE del Interoperability Test Bed. Soporta shapes SHACL personalizados y múltiples formatos de salida."
+        },
+        "jena": {
+          "title": "Apache Jena (RIOT/SHACL)",
+          "description": "La navaja suiza de Java para RDF. Potente, robusto y estándar en entornos de producción. Requiere Java."
+        },
+        "pyshacl": {
+          "title": "pySHACL",
+          "description": "Librería Python pura. Fácil de instalar con pip. Ideal si ya trabajas con scripts de datos en Python."
+        },
+        "dockerPyshacl": {
+          "title": "docker-pyshacl",
+          "description": "Imagen Docker lista con pySHACL y shapes DCAT-AP. Perfecta para CI/CD y validaciones reproducibles."
+        }
+      }
+    },
+    "concepts": {
+      "rdf": {
+        "title": "RDF",
+        "description": "**Resource Description Framework**: El modelo estándar para metadatos. Los catálogos se escriben como grafos RDF usando **Turtle**, **JSON-LD** o **RDF/XML**. Cada declaración es una _tripleta_: sujeto → predicado → objeto."
+      },
+      "shacl": {
+        "title": "SHACL",
+        "description": "**Shapes Constraint Language**: Lenguaje W3C para validar grafos RDF contra _formas_ reutilizables. Detecta errores y sugerencias usando componentes de restricción como `sh:minCount`, `sh:pattern` y `sh:datatype`."
+      },
+      "dcatap": {
+        "title": "DCAT-AP",
+        "description": "**Data Catalog Vocabulary** – Perfil de aplicación para portales europeos. Define clases como `dcat:Catalog`, `dcat:Dataset`, `dcat:Distribution`. **DCAT-AP-ES** es la extensión española con cumplimiento NTI-RISP."
+      }
+    },
     "steps": {
       "selectProfile": "Selecciona el perfil de validación que necesites (por ejemplo, DCAT-AP-ES).",
       "chooseInput": "Elige tu método de entrada preferido:",
@@ -191,6 +251,116 @@
       "info": {
         "title": "Info",
         "description": "Sugerencias o notas contextuales que ayudan a mejorar la calidad del metadato."
+      }
+    },
+    "decoder": {
+      "title": "Decodificador Interactivo de Informes",
+      "description": "Haz clic en cualquier línea resaltada para ver su significado y cómo corregir problemas relacionados.",
+      "placeholder": "Haz clic en una línea del informe para ver su explicación.",
+      "analysisTitle": "Análisis de la Línea",
+      "tipTitle": "Consejo Pro",
+      "tipContent": "Revisa primero sh:focusNode—te indica exactamente qué recurso tiene el problema; luego mira sh:resultPath para encontrar la propiedad que falta o es inválida.",
+      "explanations": {
+        "validationReport": "Esta línea declara el recurso como un Informe de Validación SHACL. Toda salida SHACL comienza con esta clase.",
+        "conformsFalse": "Los datos NO cumplen con las formas SHACL. Hay al menos una violación o advertencia que requiere atención.",
+        "validationResult": "Este bloque representa un hallazgo individual de validación—una violación, advertencia o nota informativa.",
+        "severityViolation": "Esto es una VIOLACIÓN: una restricción obligatoria no se cumple. Debes corregirlo para que los datos se consideren conformes.",
+        "severityWarning": "Esto es una ADVERTENCIA: una restricción recomendada no se cumple. Corrígela si es posible, aunque puede no bloquear la conformidad.",
+        "minCount": "MinCountConstraintComponent significa que falta una propiedad requerida o no tiene suficientes valores.",
+        "resultMessage": "Este mensaje legible explica qué salió mal. Léelo con atención para obtener pistas sobre cómo corregir el problema.",
+        "focusNode": "El Nodo Foco es el recurso RDF exacto donde se detectó el problema. Usa esta URI para localizar la incidencia en tus datos.",
+        "resultPath": "La Ruta del Resultado muestra qué propiedad está fallando (ej. dcat:dataset). Añade o corrige esta propiedad en el nodo foco.",
+        "value": "El campo sh:value muestra el valor problemático real que causó el fallo de validación. Útil para entender qué dato específico es incorrecto."
+      }
+    },
+    "glossary": {
+      "title": "Glosario SHACL",
+      "description": "Términos clave para entender los informes de validación SHACL.",
+      "searchPlaceholder": "Buscar términos...",
+      "noResults": "Ningún término coincide con tu búsqueda.",
+      "focusNode": {
+        "term": "Nodo foco (Focus Node)",
+        "definition": "El recurso RDF específico (identificado por URI o nodo en blanco) donde el validador encontró un problema. Revisa este nodo en tus datos para corregir la incidencia."
+      },
+      "shape": {
+        "term": "Forma (Shape)",
+        "definition": "Un conjunto de restricciones que definen cómo deben ser los datos válidos. Las formas se escriben en SHACL y se aplican a recursos RDF."
+      },
+      "severity": {
+        "term": "Severidad",
+        "definition": "Indica la gravedad de un hallazgo: Violación (error), Advertencia (recomendación) o Info (sugerencia)."
+      },
+      "target": {
+        "term": "Objetivo (Target)",
+        "definition": "Especifica a qué recursos RDF se aplica una forma—típicamente todas las instancias de una clase (ej. dcat:Dataset)."
+      },
+      "conforms": {
+        "term": "Conforma (Conforms)",
+        "definition": "Un valor booleano que indica si los datos pasaron todas las restricciones (true) o tuvieron al menos una violación (false)."
+      },
+      "constraintComponent": {
+        "term": "Componente de restricción",
+        "definition": "El tipo de regla que se verificó, como sh:minCount (ocurrencias mínimas), sh:pattern (coincidencia regex) o sh:class (verificación de tipo)."
+      },
+      "resultPath": {
+        "term": "Ruta del resultado",
+        "definition": "La ruta de propiedad RDF donde se encontró el problema. Por ejemplo, dcat:dataset significa que el problema está en la propiedad dcat:dataset."
+      },
+      "resultMessage": {
+        "term": "Mensaje del resultado",
+        "definition": "Una explicación legible del problema. Léelo con atención—a menudo contiene pistas sobre qué valor se espera."
+      },
+      "dcatAp": {
+        "term": "DCAT-AP",
+        "definition": "**Data Catalog Vocabulary - Application Profile**. Especificación europea que estandariza metadatos para portales de datos abiertos. Garantiza interoperabilidad entre estados miembros de la UE definiendo propiedades obligatorias y recomendadas para catálogos, conjuntos de datos y distribuciones."
+      },
+      "dcatApEs": {
+        "term": "DCAT-AP-ES",
+        "definition": "Extensión española de DCAT-AP desarrollada por **datos.gob.es**. Añade requisitos nacionales como cumplimiento NTI-RISP, taxonomías específicas y propiedades adicionales para catálogos del sector público español."
+      },
+      "dcat": {
+        "term": "DCAT",
+        "definition": "**Data Catalog Vocabulary**. Estándar W3C para describir catálogos de datos y conjuntos de datos en la web. Proporciona clases como `dcat:Catalog`, `dcat:Dataset` y `dcat:Distribution` para representar estructuras de catálogo."
+      },
+      "rdf": {
+        "term": "RDF",
+        "definition": "**Resource Description Framework**. Estándar W3C para representar información como tripletas (sujeto-predicado-objeto). Base de Linked Data y tecnologías de la web semántica. Se serializa como Turtle, JSON-LD, RDF/XML, etc."
+      },
+      "rdfTriple": {
+        "term": "Tripleta RDF",
+        "definition": "La unidad básica de RDF: una declaración formada por **sujeto**, **predicado** y **objeto**. Ejemplo: `<catalogo> dcat:dataset <dataset1>` expresa que un catálogo tiene un conjunto de datos."
+      },
+      "propertyPath": {
+        "term": "Ruta de propiedad",
+        "definition": "Expresión tipo SPARQL para navegar grafos RDF. Puede usar secuencias (`/`), alternativas (`|`), inversas (`^`) y cuantificadores (`*`, `+`, `?`). SHACL usa rutas de propiedad para validar relaciones complejas."
+      },
+      "w3c": {
+        "term": "W3C",
+        "definition": "**World Wide Web Consortium**. Organización internacional de estándares que desarrolla estándares web incluyendo RDF, SPARQL, SHACL y DCAT. Las Recomendaciones W3C son especificaciones maduras y estables."
+      },
+      "nodeShape": {
+        "term": "Forma de nodo",
+        "definition": "Forma SHACL identificada por `sh:NodeShape` que aplica restricciones a recursos RDF completos. Típicamente apunta a todas las instancias de una clase (ej. todos los datasets) y valida su estructura."
+      },
+      "propertyShape": {
+        "term": "Forma de propiedad",
+        "definition": "Forma SHACL dentro de una forma de nodo que valida una propiedad específica (como `dcat:title`). Puede verificar cardinalidad (`sh:minCount`), tipos de datos (`sh:datatype`), rangos de valores y patrones."
+      },
+      "targetClass": {
+        "term": "Clase objetivo",
+        "definition": "Declaración `sh:targetClass` que especifica qué recursos RDF valida una forma. Ejemplo: `sh:targetClass dcat:Dataset` significa que la forma se aplica a todos los recursos de tipo `dcat:Dataset`."
+      },
+      "dataGraph": {
+        "term": "Grafo de datos",
+        "definition": "El grafo RDF que se está validando—tus metadatos de catálogo reales. Los procesadores SHACL comprueban si el grafo de datos cumple las restricciones definidas en el grafo de formas."
+      },
+      "shapesGraph": {
+        "term": "Grafo de formas",
+        "definition": "El grafo RDF que contiene las formas SHACL y definiciones de restricciones. Describe cómo deberían ser los datos válidos. Separado del grafo de datos que se valida."
+      },
+      "value": {
+        "term": "sh:value",
+        "definition": "El término RDF real (URI, literal o nodo en blanco) que violó una restricción. Muestra **exactamente qué valor** causó el fallo de validación. Ejemplo: `sh:value \"formato-invalido\"` indica que la cadena \"formato-invalido\" no coincidió con el patrón requerido."
       }
     },
     "resources": {
@@ -268,13 +438,13 @@
   "profiles": {
     "names": {
       "dcat_ap": {
-        "2.1.1": "DCAT-AP 2.1.1"
+        "2.1.1": "DCAT-AP"
       },
       "dcat_ap_es": {
-        "1.0.0": "DCAT-AP-ES 1.0.0"
+        "1.0.0": "DCAT-AP-ES"
       },
       "dcat_ap_es_hvd": {
-        "1.0.0": "DCAT-AP-ES HVD 1.0.0"
+        "1.0.0": "DCAT-AP-ES HVD"
       },
       "nti_risp": {
         "2013": "NTI-RISP (2013)"

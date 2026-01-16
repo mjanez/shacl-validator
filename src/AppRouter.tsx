@@ -1,10 +1,5 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Link } from 'react-router-dom';
-import ValidatorInput from './components/Validator/ValidatorInput';
-import ValidationResults from './components/Validator/ValidationResults';
-import ReportViewer from './components/Viewer/ReportViewer';
-import EducationalContent from './components/Guide/EducationalContent';
-import SettingsPanel from './components/Settings/SettingsPanel';
 import { useTranslation } from 'react-i18next';
 import SHACLValidationService from './services/SHACLValidationService';
 import { ProfileSelection, SHACLReport } from './types';
@@ -12,6 +7,12 @@ import Layout from './components/layout/Layout';
 import { Button } from './components/ui/button';
 import { BookOpenCheck } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './components/ui/tooltip';
+
+const ValidatorInput = lazy(() => import('./components/Validator/ValidatorInput'));
+const ValidationResults = lazy(() => import('./components/Validator/ValidationResults'));
+const ReportViewer = lazy(() => import('./components/Viewer/ReportViewer'));
+const EducationalContent = lazy(() => import('./components/Guide/EducationalContent'));
+const SettingsPanel = lazy(() => import('./components/Settings/SettingsPanel'));
 
 const AppRouter: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -73,15 +74,21 @@ const AppRouter: React.FC = () => {
                 </div>
               </section>
 
-              <ValidatorInput onValidate={handleValidate} isLoading={isLoading} />
+              <Suspense fallback={<div className="flex items-center justify-center p-8"><div className="text-muted-foreground">{t('common.loading', 'Loading...')}</div></div>}>
+                <ValidatorInput onValidate={handleValidate} isLoading={isLoading} />
+              </Suspense>
 
-              {report && <ValidationResults report={report} />}
+              {report && (
+                <Suspense fallback={<div className="flex items-center justify-center p-8"><div className="text-muted-foreground">{t('common.loading', 'Loading...')}</div></div>}>
+                  <ValidationResults report={report} />
+                </Suspense>
+              )}
             </div>
           }
         />
-        <Route path="/viewer" element={<ReportViewer />} />
-        <Route path="/guide" element={<EducationalContent />} />
-        <Route path="/settings" element={<SettingsPanel />} />
+        <Route path="/viewer" element={<Suspense fallback={<div className="flex items-center justify-center p-8"><div className="text-muted-foreground">{t('common.loading', 'Loading...')}</div></div>}><ReportViewer /></Suspense>} />
+        <Route path="/guide" element={<Suspense fallback={<div className="flex items-center justify-center p-8"><div className="text-muted-foreground">{t('common.loading', 'Loading...')}</div></div>}><EducationalContent /></Suspense>} />
+        <Route path="/settings" element={<Suspense fallback={<div className="flex items-center justify-center p-8"><div className="text-muted-foreground">{t('common.loading', 'Loading...')}</div></div>}><SettingsPanel /></Suspense>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>
