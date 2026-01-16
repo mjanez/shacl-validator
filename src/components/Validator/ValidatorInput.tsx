@@ -2,8 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState, Suspense } fr
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
-import { ValidationProfile, ProfileSelection } from '../../types';
+import { ValidationProfile, ProfileSelection, CustomSHACLFile, ValidationMode } from '../../types';
 import ProfileSelector from './ProfileSelector';
+import SHACLManager from './SHACLManager';
+import ValidationModeSelector from './ValidationModeSelector';
 import mqaConfig from '../../config/mqa-config.json';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Button } from '../ui/button';
@@ -50,8 +52,10 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
   const [selectedProfile, setSelectedProfile] = useState<ProfileSelection>({
     profile: 'dcat_ap_es' as ValidationProfile,
     version: '1.0.0',
-    branch: 'main'
+    branch: 'main',
+    mode: 'predefined'
   });
+  const [customShaclFiles, setCustomShaclFiles] = useState<CustomSHACLFile[]>([]);
   const uploadCancelledRef = useRef(false);
   const [rdfCounts, setRdfCounts] = useState(defaultRdfCounts);
 
@@ -214,7 +218,11 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
       }
     }
 
-    onValidate(payload, selectedProfile);
+    const validationProfile: ProfileSelection = {
+      ...selectedProfile,
+      customShacl: selectedProfile.mode === 'custom' ? customShaclFiles : undefined
+    };
+    onValidate(payload, validationProfile);
   };
 
   const fetchMetadata = useCallback(async (targetUrl: string) => {
@@ -420,15 +428,30 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
 
   const isValidateDisabled = useMemo(() => {
     if (isLoading) return true;
+    if (selectedProfile.mode === 'custom' && customShaclFiles.length === 0) return true;
     if (mode === 'paste') return !textContent.trim();
     if (mode === 'url') return !url.trim();
     if (mode === 'upload') return !textContent.trim();
     return true;
-  }, [mode, textContent, url, isLoading]);
+  }, [mode, textContent, url, isLoading, selectedProfile.mode, customShaclFiles.length]);
+
+  const handleModeChange = (newMode: ValidationMode) => {
+    setSelectedProfile(prev => ({ ...prev, mode: newMode }));
+  };
 
   return (
     <div className="space-y-6">
-      <ProfileSelector selectedProfile={selectedProfile} onProfileChange={setSelectedProfile} disabled={isLoading} />
+      <ValidationModeSelector 
+        mode={selectedProfile.mode} 
+        onChange={handleModeChange}
+        disabled={isLoading}
+      />
+
+      {selectedProfile.mode === 'predefined' ? (
+        <ProfileSelector selectedProfile={selectedProfile} onProfileChange={setSelectedProfile} disabled={isLoading} />
+      ) : (
+        <SHACLManager shaclFiles={customShaclFiles} onChange={setCustomShaclFiles} />
+      )}
 
       <Card>
         <CardHeader>
@@ -586,13 +609,18 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t('validator.currentProfile')}</p>
               <p className="font-semibold text-foreground">
-                {t(`profiles.names.${selectedProfile.profile}.${selectedProfile.version}`, { defaultValue: selectedProfile.profile })} · {selectedProfile.branch}
+                {selectedProfile.mode === 'custom' 
+                  ? `${t('validator.mode.custom')} (${customShaclFiles.length} ${customShaclFiles.length === 1 ? 'file' : 'files'})`
+                  : `${t(`profiles.names.${selectedProfile.profile}.${selectedProfile.version}`, { defaultValue: selectedProfile.profile })} · ${selectedProfile.branch}`
+                }
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="ghost" onClick={loadSample} disabled={isLoading}>
-                {t('validator.loadSample')}
-              </Button>
+              {selectedProfile.mode === 'predefined' && (
+                <Button variant="ghost" onClick={loadSample} disabled={isLoading}>
+                  {t('validator.loadSample')}
+                </Button>
+              )}
               <Button onClick={handleValidate} disabled={isValidateDisabled} className="min-w-[160px]">
                 {isLoading ? (
                   <>

@@ -345,6 +345,38 @@ const EducationalContent: React.FC = () => {
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            {/* Metadata Quality React */}
+                                            <div className="rounded-xl border border-border p-5 transition-colors hover:bg-muted/30">
+                                                <div className="flex items-start gap-4">
+                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                                        <Database className="h-5 w-5" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h4 className="font-semibold">{t('guide.tools.items.metadataQuality.title')}</h4>
+                                                        <p className="mt-1 text-sm text-muted-foreground">{t('guide.tools.items.metadataQuality.description')}</p>
+                                                        <a href="https://metadata-quality.mjanez.dev/" target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                                                            {t('guide.tools.openTool')} <ExternalLink className="h-3 w-3" />
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* SHACL Play! */}
+                                            <div className="rounded-xl border border-border p-5 transition-colors hover:bg-muted/30">
+                                                <div className="flex items-start gap-4">
+                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+                                                        <Shapes className="h-5 w-5" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <h4 className="font-semibold">{t('guide.tools.items.shaclPlay.title')}</h4>
+                                                        <p className="mt-1 text-sm text-muted-foreground">{t('guide.tools.items.shaclPlay.description')}</p>
+                                                        <a href="https://shacl-play.sparna.fr/play/" target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                                                            {t('guide.tools.openTool')} <ExternalLink className="h-3 w-3" />
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
 
@@ -388,19 +420,19 @@ const EducationalContent: React.FC = () => {
                                                 </div>
                                             </div>
 
-                                            {/* docker-pyshacl */}
+                                            {/* easy-rdf-endpoint */}
                                             <div className="rounded-xl border border-border p-5 transition-colors hover:bg-muted/30">
                                                 <div className="flex items-start gap-4">
                                                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400">
                                                         <Terminal className="h-5 w-5" />
                                                     </div>
                                                     <div className="flex-1">
-                                                        <h4 className="font-semibold">{t('guide.tools.items.dockerPyshacl.title')}</h4>
-                                                        <p className="mt-1 text-sm text-muted-foreground">{t('guide.tools.items.dockerPyshacl.description')}</p>
+                                                        <h4 className="font-semibold">{t('guide.tools.items.easyRdfEndpoint.title')}</h4>
+                                                        <p className="mt-1 text-sm text-muted-foreground">{t('guide.tools.items.easyRdfEndpoint.description')}</p>
                                                         <div className="mt-3 overflow-hidden rounded-lg bg-slate-900 p-3 font-mono text-xs text-slate-100">
-                                                            <span className="text-green-400">$</span> docker run -v ./data:/data mjanez/pyshacl ...
+                                                            <span className="text-green-400">$</span> docker-compose up -d
                                                         </div>
-                                                        <a href="https://github.com/mjanez/docker-pyshacl" target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                                                        <a href="https://github.com/mjanez/easy-rdf-endpoint" target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-sm text-primary hover:underline">
                                                             {t('guide.tools.openDocs')} <ExternalLink className="h-3 w-3" />
                                                         </a>
                                                     </div>

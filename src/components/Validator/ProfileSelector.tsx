@@ -35,7 +35,8 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({ selectedProfile, onPr
     onProfileChange({
       profile: profileId as ValidationProfile,
       version: defaultVersion,
-      branch: defaultBranch
+      branch: defaultBranch,
+      mode: 'predefined'
     });
   };
 
@@ -54,16 +55,16 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({ selectedProfile, onPr
   };
 
   const currentProfileConfig = profiles[selectedProfile.profile];
-  const currentVersionConfig = currentProfileConfig.versions[selectedProfile.version];
-  const availableVersions = Object.keys(currentProfileConfig.versions).sort().reverse();
-  const availableBranches = currentProfileConfig.branches || {};
+  const currentVersionConfig = currentProfileConfig?.versions[selectedProfile.version];
+  const availableVersions = currentProfileConfig ? Object.keys(currentProfileConfig.versions).sort().reverse() : [];
+  const availableBranches = currentProfileConfig?.branches || {};
   const hasBranchSelection = Object.keys(availableBranches).length > 0;
-  const currentBranch = selectedProfile.branch || currentProfileConfig.defaultBranch || 'main';
+  const currentBranch = selectedProfile.branch || currentProfileConfig?.defaultBranch || 'main';
 
-  const renderProfileButton = (label: React.ReactNode) => (
+  const renderProfileButton = (label: React.ReactNode, icon?: string) => (
     <Button variant="outline" className="h-12 justify-between gap-2 border-border/70" disabled={disabled}>
       <span className="flex items-center gap-2 text-sm">
-        {currentVersionConfig.icon && <img src={currentVersionConfig.icon} alt="" className="h-6 w-6" />}
+        {icon && <img src={icon} alt="" className="h-6 w-6" />}
         {label}
       </span>
       <svg className="h-4 w-4 text-muted-foreground" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -88,24 +89,28 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({ selectedProfile, onPr
           <CardTitle className="text-base">{t('validator.selectProfile')}</CardTitle>
           <CardDescription>{t('validator.workspaceSubtitle')}</CardDescription>
         </div>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" asChild aria-label={t('validator.profileInfo') ?? 'Profile documentation'}>
-                <a href={currentVersionConfig.url} target="_blank" rel="noreferrer" className="text-muted-foreground">
-                  <Info className="h-5 w-5" />
-                </a>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t('validator.profileInfo')}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        {currentVersionConfig && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" asChild aria-label={t('validator.profileInfo') ?? 'Profile documentation'}>
+                  <a href={currentVersionConfig.url} target="_blank" rel="noreferrer" className="text-muted-foreground">
+                    <Info className="h-5 w-5" />
+                  </a>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('validator.profileInfo')}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-3">
         <div className="flex flex-col gap-2">
           <Label>{t('validator.selectProfile')}</Label>
           <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>{renderProfileButton(getProfileLabel(selectedProfile.profile, selectedProfile.version))}</DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
+              {renderProfileButton(getProfileLabel(selectedProfile.profile, selectedProfile.version), currentVersionConfig?.icon)}
+            </DropdownMenuTrigger>
             <DropdownMenuContent className="min-w-[260px]">
               {Object.keys(profiles).map((key) => {
                 const profile = profiles[key];
@@ -129,50 +134,50 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({ selectedProfile, onPr
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label>{t('validator.version')}</Label>
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>{renderSimpleButton(selectedProfile.version, availableVersions.length <= 1)}</DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {availableVersions.map((ver) => (
-                <DropdownMenuItem
-                  key={ver}
-                  onSelect={(event) => {
-                    event.preventDefault();
-                    handleVersionSelect(ver);
-                  }}
-                  className="flex items-center justify-between"
-                >
-                  <span>{ver}</span>
-                  {selectedProfile.version === ver && <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden="true" />}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+              <Label>{t('validator.version')}</Label>
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>{renderSimpleButton(selectedProfile.version, availableVersions.length <= 1)}</DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {availableVersions.map((ver) => (
+                    <DropdownMenuItem
+                      key={ver}
+                      onSelect={(event) => {
+                        event.preventDefault();
+                        handleVersionSelect(ver);
+                      }}
+                      className="flex items-center justify-between"
+                    >
+                      <span>{ver}</span>
+                      {selectedProfile.version === ver && <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden="true" />}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
-        {hasBranchSelection && (
-          <div className="flex flex-col gap-2">
-            <Label>{t('validator.branch')}</Label>
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>{renderSimpleButton(getBranchLabel(currentBranch, availableBranches[currentBranch]), false)}</DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {Object.entries(availableBranches).map(([branchKey, branchLabel]) => (
-                  <DropdownMenuItem
-                    key={branchKey}
-                    onSelect={(event) => {
-                      event.preventDefault();
-                      handleBranchSelect(branchKey);
-                    }}
-                    className="flex items-center justify-between"
-                  >
-                    <span>{getBranchLabel(branchKey, branchLabel as string)}</span>
-                    {currentBranch === branchKey && <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden="true" />}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
+            {hasBranchSelection && (
+              <div className="flex flex-col gap-2">
+                <Label>{t('validator.branch')}</Label>
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger asChild>{renderSimpleButton(getBranchLabel(currentBranch, availableBranches[currentBranch]), false)}</DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {Object.entries(availableBranches).map(([branchKey, branchLabel]) => (
+                      <DropdownMenuItem
+                        key={branchKey}
+                        onSelect={(event) => {
+                          event.preventDefault();
+                          handleBranchSelect(branchKey);
+                        }}
+                        className="flex items-center justify-between"
+                      >
+                        <span>{getBranchLabel(branchKey, branchLabel as string)}</span>
+                        {currentBranch === branchKey && <CheckCircle2 className="h-4 w-4 text-primary" aria-hidden="true" />}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
       </CardContent>
       <CardFooter className="flex flex-wrap items-center justify-between gap-4 border-t border-border/60 bg-muted/30 px-6 py-4 text-sm">
         <div className="flex items-center gap-2 text-muted-foreground">
@@ -184,7 +189,9 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({ selectedProfile, onPr
         <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
           <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden="true" />
           <span className="font-medium text-foreground">
-            {t('validator.validatingAgainst')}: <span className="text-muted-foreground">{getProfileLabel(selectedProfile.profile, selectedProfile.version)}</span>
+            {t('validator.validatingAgainst')}: <span className="text-muted-foreground">
+              {getProfileLabel(selectedProfile.profile, selectedProfile.version)}
+            </span>
           </span>
         </div>
       </CardFooter>

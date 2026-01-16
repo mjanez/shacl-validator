@@ -122,6 +122,26 @@ class SHACLValidationService {
     return dataset;
   }
 
+  private static async parseCustomSHACL(shaclContents: string[]): Promise<any> {
+    const dataset = rdfDataset.dataset();
+    
+    for (let i = 0; i < shaclContents.length; i++) {
+      const content = shaclContents[i];
+      const fileName = `File #${i + 1}`;
+      
+      try {
+        const quads = await this.parseSHACLContent(content, `custom-shacl-${i + 1}.ttl`);
+        quads.forEach((q) => dataset.add(q));
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error(`Failed to parse custom SHACL ${fileName}:`, error);
+        throw new Error(`Invalid SHACL syntax in ${fileName}: ${errorMsg}`);
+      }
+    }
+    
+    return dataset;
+  }
+
   private static normalizeDataFormat(format?: string): string {
     if (!format) return 'text/turtle';
     const lower = format.toLowerCase();
@@ -313,9 +333,19 @@ class SHACLValidationService {
     profile: ValidationProfile,
     format: string = 'turtle',
     language: string = 'es',
-    branch?: string
+    branch?: string,
+    customShacl?: string[],
+    mode?: 'predefined' | 'custom'
   ): Promise<SHACLReport> {
-    const shapes = await this.getSHACLShapes(profile, branch);
+    let shapes: any;
+    
+    // Use custom SHACL if mode is 'custom' and customShacl is provided
+    if (mode === 'custom' && customShacl && customShacl.length > 0) {
+      shapes = await this.parseCustomSHACL(customShacl);
+    } else {
+      shapes = await this.getSHACLShapes(profile, branch);
+    }
+    
     const preferredLanguage = this.normalizeLang(language) || 'es';
 
     if (!shapes || Array.from(shapes).length === 0) {

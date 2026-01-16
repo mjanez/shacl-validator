@@ -1,9 +1,20 @@
 export type ValidationProfile = 'dcat_ap' | 'dcat_ap_es' | 'dcat_ap_es_hvd' | 'nti_risp';
 
+export type ValidationMode = 'predefined' | 'custom';
+
+export interface CustomSHACLFile {
+  id: string;
+  content: string;
+  source: 'paste' | 'upload' | 'url';
+  url?: string;
+}
+
 export interface ProfileSelection {
   profile: ValidationProfile;
   version: string;
   branch?: string;
+  mode?: ValidationMode;
+  customShacl?: CustomSHACLFile[];
 }
 
 export type SHACLSeverity = 'Violation' | 'Warning' | 'Info';

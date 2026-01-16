@@ -49,6 +49,11 @@
     "docsCta": "Read the usage guide"
   },
   "validator": {
+    "validationMode": "Validation Mode",
+    "mode": {
+      "predefined": "Standard Profiles",
+      "custom": "Custom SHACL"
+    },
     "selectProfile": "Validation Profile",
     "version": "Version",
     "branch": "SHACL Branch",
@@ -96,7 +101,9 @@
   "common": {
     "validate": "Validate",
     "validating": "Validating...",
-    "or": "OR"
+    "or": "OR",
+    "clear": "Clear",
+    "loading": "Loading..."
   },
   "results": {
     "conforms": "Conforms",
@@ -195,9 +202,17 @@
           "title": "pySHACL",
           "description": "Pure Python library. Easy to install with pip. Ideal if you already work with data scripts in Python."
         },
-        "dockerPyshacl": {
-          "title": "docker-pyshacl",
-          "description": "Ready-to-use Docker image with pySHACL and DCAT-AP shapes. Perfect for CI/CD and reproducible validations."
+        "easyRdfEndpoint": {
+          "title": "easy-rdf-endpoint",
+          "description": "Dockerized RDF endpoint that simplifies catalog deployment, provides SPARQL endpoint, and incorporates semantic/syntactic validation interfaces."
+        },
+        "shaclPlay": {
+          "title": "SHACL Play!",
+          "description": "Complete SHACL toolkit: validation, documentation generation, and diagram creation. Powered by TopBraid SHACL API."
+        },
+        "metadataQuality": {
+          "title": "Metadata Quality React",
+          "description": "Interactive dashboard to analyze metadata quality (MQA) with dashboards, metrics, and exportable reports"
         }
       }
     },
@@ -445,6 +460,38 @@
     "branches": {
       "main": "Stable (main)",
       "develop": "Development (develop)"
+    },
+    "manager": {
+      "title": "Custom SHACL Shapes Manager",
+      "description": "Upload, paste, or load SHACL shape files from URLs to define your validation rules",
+      "filesLoaded": "files loaded",
+      "loadedFiles": "Loaded files",
+      "file": "File",
+      "addFile": "Add file",
+      "clear": "Clear",
+      "loading": "Loading",
+      "loadUrl": "Load from URL",
+      "tabs": {
+        "paste": "Paste",
+        "upload": "Upload",
+        "url": "From URL"
+      },
+      "source": {
+        "paste": "Pasted",
+        "upload": "Uploaded",
+        "url": "URL"
+      },
+      "pastePlaceholder": "Paste your SHACL shapes here (Turtle format)...",
+      "urlPlaceholder": "https://example.com/shapes.ttl",
+      "pasteHint": "Paste SHACL shapes in Turtle, RDF/XML, or JSON-LD format",
+      "urlHint": "Enter the URL of a SHACL shapes file. Note: CORS restrictions may apply.",
+      "uploadHint": "Supports .ttl, .rdf, .xml, .n3, .jsonld files",
+      "dragDrop": "Drag and drop files here",
+      "browseFiles": "Browse files",
+      "dropActive": "Drop files here",
+      "dropInactive": "Drag SHACL files here or click to select",
+      "dropHint": "Multiple files supported",
+      "fileLoaded": "File loaded successfully"
     }
   }
 }
