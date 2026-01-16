@@ -96,7 +96,13 @@
     "profileReadyHint": "Ready to validate",
     "previewLabel": "Preview",
     "jsonPreview": "JSON-LD",
-    "normalizedPreview": "Normalized TTL"
+    "supportedFormats": "Supported: Turtle (.ttl), N3 (.n3), RDF/XML (.rdf), JSON-LD (.jsonld)",
+    "previewEmpty": "Paste or upload RDF content to see the JSON-LD preview",
+    "copyJsonLd": "Copy JSON-LD",
+    "copied": "Copied!",
+    "jsonLdHelp": "Learn about JSON-LD",
+    "unsupportedFormatError": "Unsupported file format: {{extension}}. Only Turtle (.ttl), N3 (.n3), RDF/XML (.rdf, .xml), and JSON-LD (.jsonld, .json) are supported.",
+    "converterHint": "You can convert your file to a supported format at:"
   },
   "common": {
     "validate": "Validate",
