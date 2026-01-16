@@ -493,9 +493,9 @@ const EducationalContent: React.FC = () => {
                                                 <div className="rounded-lg bg-muted/50 p-3 font-mono text-xs">
                                                     {selectedLine.text}
                                                 </div>
-                                                <p className="text-sm text-muted-foreground">
+                                                <ReactMarkdown className="text-sm text-muted-foreground prose-code:text-foreground prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-strong:font-semibold prose-strong:text-foreground">
                                                     {t(`guide.decoder.explanations.${selectedLine.explainKey}`)}
-                                                </p>
+                                                </ReactMarkdown>
                                             </div>
                                         ) : (
                                             <div className="text-center text-muted-foreground">
@@ -506,12 +506,14 @@ const EducationalContent: React.FC = () => {
                                     </div>
 
                                     {/* Pro Tip */}
-                                    <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950/50">
+                                    <div className="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950/50">
                                         <div className="flex items-start gap-3">
-                                            <Lightbulb className="mt-0.5 h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                            <Lightbulb className="mt-0.5 h-5 w-5 text-green-600 dark:text-green-400" />
                                             <div>
-                                                <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-300">{t('guide.decoder.tipTitle')}</h4>
-                                                <p className="mt-1 text-sm text-blue-700 dark:text-blue-400">{t('guide.decoder.tipContent')}</p>
+                                                <h4 className="text-sm font-semibold text-green-800 dark:text-green-300">{t('guide.decoder.tipTitle')}</h4>
+                                                <ReactMarkdown className="mt-1 text-sm text-green-700 dark:text-green-400 prose-code:text-green-800 dark:prose-code:text-green-300 prose-code:bg-green-100 dark:prose-code:bg-green-900/50 prose-code:px-1 prose-code:rounded">
+                                                    {t('guide.decoder.tipContent')}
+                                                </ReactMarkdown>
                                             </div>
                                         </div>
                                     </div>
