@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ValidationMode } from '../../types';
 import { Label } from '../ui/label';
-import { Sparkles, Database } from 'lucide-react';
+import { Settings, FileStack } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface ValidationModeSelectorProps {
@@ -30,7 +30,7 @@ const ValidationModeSelector: React.FC<ValidationModeSelectorProps> = ({ mode, o
               : 'text-muted-foreground hover:text-foreground'
           )}
         >
-          <Database className="h-4 w-4" />
+          <FileStack className="h-4 w-4" />
           {t('validator.mode.predefined')}
         </button>
         <button
@@ -45,7 +45,7 @@ const ValidationModeSelector: React.FC<ValidationModeSelectorProps> = ({ mode, o
               : 'text-muted-foreground hover:text-foreground'
           )}
         >
-          <Sparkles className="h-4 w-4" />
+          <Settings className="h-4 w-4" />
           {t('validator.mode.custom')}
         </button>
       </div>
