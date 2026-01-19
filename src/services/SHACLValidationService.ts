@@ -1,5 +1,20 @@
-import { Validator } from 'shacl-engine';
-import { validations as sparqlValidations } from 'shacl-engine/sparql.js';
+// Lazy-loaded shacl-engine imports to reduce initial bundle size
+// These are only loaded when validateRDF is called
+let _Validator: typeof import('shacl-engine').Validator | null = null;
+let _sparqlValidations: typeof import('shacl-engine/sparql.js').validations | null = null;
+
+async function getShaclEngine() {
+  if (!_Validator || !_sparqlValidations) {
+    const [shaclModule, sparqlModule] = await Promise.all([
+      import('shacl-engine'),
+      import('shacl-engine/sparql.js')
+    ]);
+    _Validator = shaclModule.Validator;
+    _sparqlValidations = sparqlModule.validations;
+  }
+  return { Validator: _Validator, sparqlValidations: _sparqlValidations };
+}
+
 import rdfDataModel from '@rdfjs/data-model';
 import rdfDataset from '@rdfjs/dataset';
 import { Parser as N3Parser } from 'n3';
@@ -387,6 +402,9 @@ class SHACLValidationService {
       };
     }
 
+    // Lazy load shacl-engine only when needed
+    const { Validator, sparqlValidations } = await getShaclEngine();
+    
     const validator = new Validator(shapes, {
       factory: rdfDataModel,
       debug: false,
