@@ -44,11 +44,16 @@
     "open": "Abrir paleta de comandos"
   },
   "home": {
-    "title": "Validador de Metadatos RDF",
+    "title": "Validador de metadatos RDF",
     "subtitle": "Valida tus metadatos contra perfiles SHACL estándar (DCAT-AP, DCAT-AP-ES, NTI-RISP) directamente en el navegador.",
     "docsCta": "Leer la guía de uso"
   },
   "validator": {
+    "validationMode": "Modo de validación",
+    "mode": {
+      "predefined": "Perfiles estándar",
+      "custom": "SHACL personalizado"
+    },
     "selectProfile": "Perfil de validación",
     "version": "Versión",
     "branch": "Rama SHACL",
@@ -94,13 +99,28 @@
     "profileReadyHint": "Listo para validar",
     "previewLabel": "Vista previa",
     "jsonPreview": "JSON-LD",
-    "normalizedPreview": "TTL normalizado"
+    "supportedFormats": "Soportados: Turtle (.ttl), N3 (.n3), RDF/XML (.rdf), JSON-LD (.jsonld)",
+    "previewEmpty": "Pega o sube contenido RDF para ver la vista previa en JSON-LD",
+    "copyJsonLd": "Copiar JSON-LD",
+    "copied": "¡Copiado!",
+    "jsonLdHelp": "Aprende sobre JSON-LD",
+    "unsupportedFormatError": "Formato de archivo no soportado: {{extension}}. Solo se admiten Turtle (.ttl), N3 (.n3), RDF/XML (.rdf, .xml) y JSON-LD (.jsonld, .json).",
+    "converterHint": "Puedes convertir tu archivo a un formato soportado en:",
+    "largeFile": {
+      "title": "Catálogo grande detectado",
+      "message": "El contenido a validar es de aproximadamente {{size}}. La validación puede tardar varios minutos.",
+      "tip": "Puedes navegar a otra pestaña del navegador mientras se procesa. No cierres esta pestaña.",
+      "estimatedTime": "Tiempo estimado: {{minutes}} minutos",
+      "proceed": "Continuar",
+      "cancel": "Cancelar"
+    }
   },
   "common": {
     "validate": "Validar",
     "validating": "Validando...",
     "or": "O",
-    "clear": "Limpiar"
+    "clear": "Limpiar",
+    "loading": "Cargando..."
   },
   "results": {
     "conforms": "Conforme",
@@ -132,7 +152,7 @@
     "message": "Mensaje",
     "component": "Restricción",
     "count": "Recuento",
-    "focusNode": "Nodo foco",
+    "focusNode": "nodo de enfoque",
     "path": "Ruta",
     "value": "Valor"
   },
@@ -155,7 +175,29 @@
     "topShapesHint": "Shapes y restricciones con mayor número de incidencias.",
     "emptyStats": "Importa un informe para ver la distribución por severidades.",
     "emptyShapes": "Sube un informe SHACL para detectar los shapes con más incidencias.",
-    "exportSegments": "Descargar segmentos"
+    "exportSegments": "Descargar segmentos",
+    "tabs": {
+      "results": "Resultados",
+      "dashboard": "Dashboard"
+    },
+    "reset": "Cargar nuevo informe",
+    "resetHint": "Limpiar informe actual y cargar uno nuevo",
+    "summary": {
+      "title": "Resumen del informe",
+      "totalResults": "Total de resultados",
+      "conformance": "Conformidad",
+      "conforms": "Conforme",
+      "notConforms": "No conforme",
+      "uniqueFocusNodes": "Nodos de enfoque únicos",
+      "uniqueShapes": "Shapes únicos",
+      "uniqueProperties": "Propiedades únicas"
+    },
+    "propertyBreakdown": "Distribución por propiedad",
+    "propertyBreakdownHint": "Propiedades con más incidencias de validación.",
+    "focusNodeBreakdown": "Distribución por nodo de enfoque",
+    "focusNodeBreakdownHint": "Recursos con más incidencias de validación.",
+    "constraintBreakdown": "Desglose por tipo de restricción",
+    "constraintBreakdownHint": "Tipos de restricciones que fallan con más frecuencia."
   },
   "guide": {
     "title": "Guía SHACL",
@@ -165,23 +207,23 @@
     "description": "SHACL (Shapes Constraint Language) es un estándar del W3C para validar grafos RDF frente a formas reutilizables y mantener los datos alineados con modelos como DCAT-AP.",
     "tabs": {
       "howto": "Cómo Usar",
-      "tools": "Elegir Herramienta",
+      "tools": "Elegir herramienta",
       "decoder": "Decodificador",
       "glossary": "Glosario"
     },
     "tools": {
-      "title": "Selecciona tu Herramienta",
+      "title": "Selecciona tu herramienta",
       "description": "No existe una 'mejor herramienta', depende de tu perfil y necesidades. Elige tu flujo de trabajo para ver recomendaciones.",
       "restart": "Volver a empezar",
       "openTool": "Abrir herramienta",
       "openDocs": "Ver documentación",
       "web": {
-        "title": "Interfaces Web",
+        "title": "Interfaces web",
         "description": "Sin instalación. Pega o sube tu RDF y obtén resultados instantáneos en el navegador.",
         "badge": "Para principiantes"
       },
       "cli": {
-        "title": "Herramientas de Línea de Comandos",
+        "title": "Herramientas de línea de comandos",
         "description": "Herramientas potentes para automatización, pipelines CI/CD y procesamiento masivo de catálogos.",
         "badge": "Avanzado"
       },
@@ -203,9 +245,17 @@
           "title": "pySHACL",
           "description": "Librería Python pura. Fácil de instalar con pip. Ideal si ya trabajas con scripts de datos en Python."
         },
-        "dockerPyshacl": {
-          "title": "docker-pyshacl",
-          "description": "Imagen Docker lista con pySHACL y shapes DCAT-AP. Perfecta para CI/CD y validaciones reproducibles."
+        "easyRdfEndpoint": {
+          "title": "easy-rdf-endpoint",
+          "description": "Endpoint RDF dockerizado que simplifica el despliegue de catálogos, proporciona SPARQL endpoint e incorpora interfaces de validación semántica/sintáctica."
+        },
+        "shaclPlay": {
+          "title": "SHACL Play!",
+          "description": "Kit completo de herramientas SHACL: validación, generación de documentación y creación de diagramas. Usa TopBraid SHACL API."
+        },
+        "metadataQuality": {
+          "title": "Metadata Quality React",
+          "description": "Dashboard interactivo para analizar la calidad de metadatos (MQA) con cuadros de mandos, métricas e informes exportables."
         }
       }
     },
@@ -254,23 +304,23 @@
       }
     },
     "decoder": {
-      "title": "Decodificador Interactivo de Informes",
+      "title": "Decodificador interactivo de informes SHACL",
       "description": "Haz clic en cualquier línea resaltada para ver su significado y cómo corregir problemas relacionados.",
       "placeholder": "Haz clic en una línea del informe para ver su explicación.",
-      "analysisTitle": "Análisis de la Línea",
-      "tipTitle": "Consejo Pro",
-      "tipContent": "Revisa primero sh:focusNode—te indica exactamente qué recurso tiene el problema; luego mira sh:resultPath para encontrar la propiedad que falta o es inválida.",
+      "analysisTitle": "Análisis de la línea",
+      "tipTitle": "Consejo",
+      "tipContent": "Revisa primero `sh:focusNode`—te indica **exactamente qué recurso** tiene el problema; luego mira `sh:resultPath` para encontrar la **propiedad que falta o es inválida**.",
       "explanations": {
-        "validationReport": "Esta línea declara el recurso como un Informe de Validación SHACL. Toda salida SHACL comienza con esta clase.",
-        "conformsFalse": "Los datos NO cumplen con las formas SHACL. Hay al menos una violación o advertencia que requiere atención.",
-        "validationResult": "Este bloque representa un hallazgo individual de validación—una violación, advertencia o nota informativa.",
-        "severityViolation": "Esto es una VIOLACIÓN: una restricción obligatoria no se cumple. Debes corregirlo para que los datos se consideren conformes.",
-        "severityWarning": "Esto es una ADVERTENCIA: una restricción recomendada no se cumple. Corrígela si es posible, aunque puede no bloquear la conformidad.",
-        "minCount": "MinCountConstraintComponent significa que falta una propiedad requerida o no tiene suficientes valores.",
-        "resultMessage": "Este mensaje legible explica qué salió mal. Léelo con atención para obtener pistas sobre cómo corregir el problema.",
-        "focusNode": "El Nodo Foco es el recurso RDF exacto donde se detectó el problema. Usa esta URI para localizar la incidencia en tus datos.",
-        "resultPath": "La Ruta del Resultado muestra qué propiedad está fallando (ej. dcat:dataset). Añade o corrige esta propiedad en el nodo foco.",
-        "value": "El campo sh:value muestra el valor problemático real que causó el fallo de validación. Útil para entender qué dato específico es incorrecto."
+        "validationReport": "Esta línea declara el recurso como un **Informe de Validación SHACL**. Toda salida SHACL comienza con la clase `sh:ValidationReport`.",
+        "conformsFalse": "Los datos **NO cumplen** con las formas SHACL (`sh:conforms false`). Hay al menos una violación o advertencia que requiere atención.",
+        "validationResult": "Este bloque representa un **hallazgo individual** de validación (`sh:ValidationResult`)—una violación, advertencia o nota informativa.",
+        "severityViolation": "Esto es una **VIOLACIÓN** (`sh:Violation`): una **restricción obligatoria** no se cumple. Debes corregirlo para que los datos se consideren conformes.",
+        "severityWarning": "Esto es una **ADVERTENCIA** (`sh:Warning`): una **restricción recomendada** no se cumple. Corrígela si es posible, aunque puede no bloquear la conformidad.",
+        "minCount": "El `MinCountConstraintComponent` significa que **falta una propiedad requerida** o no tiene suficientes valores. Revisa `sh:minCount` en la definición de la forma.",
+        "resultMessage": "Este **mensaje legible** (`sh:resultMessage`) explica qué salió mal. Léelo con atención para obtener pistas sobre cómo corregir el problema.",
+        "focusNode": "El **nodo de enfoque** (`sh:focusNode`) es el **recurso RDF exacto** donde se detectó el problema. Usa esta URI para localizar la incidencia en tus datos.",
+        "resultPath": "La **ruta del resultado** (`sh:resultPath`) muestra **qué propiedad** está fallando (ej. `dcat:dataset`). Añade o corrige esta propiedad en el nodo de enfoque.",
+        "value": "El campo `sh:value` muestra el **valor problemático real** que causó el fallo de validación. Útil para entender qué dato específico es incorrecto."
       }
     },
     "glossary": {
@@ -279,7 +329,7 @@
       "searchPlaceholder": "Buscar términos...",
       "noResults": "Ningún término coincide con tu búsqueda.",
       "focusNode": {
-        "term": "Nodo foco (Focus Node)",
+        "term": "nodo de enfoque (Focus Node)",
         "definition": "El recurso RDF específico (identificado por URI o nodo en blanco) donde el validador encontró un problema. Revisa este nodo en tus datos para corregir la incidencia."
       },
       "shape": {
@@ -453,6 +503,38 @@
     "branches": {
       "main": "Estable (main)",
       "develop": "Desarrollo (develop)"
+    },
+    "manager": {
+      "title": "Gestor de formas SHACL personalizadas",
+      "description": "Sube, pega o carga ficheros de formas SHACL desde URLs para definir tus reglas de validación",
+      "filesLoaded": "ficheros cargados",
+      "loadedFiles": "Ficheros cargados",
+      "file": "Fichero",
+      "addFile": "Añadir fichero",
+      "clear": "Limpiar",
+      "loading": "Cargando",
+      "loadUrl": "Cargar desde URL",
+      "tabs": {
+        "paste": "Pegar",
+        "upload": "Subir",
+        "url": "Desde URL"
+      },
+      "source": {
+        "paste": "Pegado",
+        "upload": "Subido",
+        "url": "URL"
+      },
+      "pastePlaceholder": "Pega tus formas SHACL aquí (formato Turtle)...",
+      "urlPlaceholder": "https://ejemplo.gob.es/formas.ttl",
+      "pasteHint": "Pega formas SHACL en formato Turtle, RDF/XML o JSON-LD",
+      "urlHint": "Introduce la URL de un fichero de formas SHACL. Nota: Pueden aplicarse restricciones CORS.",
+      "uploadHint": "Soporta ficheros .ttl, .rdf, .xml, .n3, .jsonld",
+      "dragDrop": "Arrastra y suelta ficheros aquí",
+      "browseFiles": "Explorar ficheros",
+      "dropActive": "Suelta los ficheros aquí",
+      "dropInactive": "Arrastra ficheros SHACL aquí o haz clic para seleccionar",
+      "dropHint": "Soporta múltiples ficheros",
+      "fileLoaded": "Fichero cargado correctamente"
     }
   }
 }

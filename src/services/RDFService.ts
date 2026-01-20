@@ -1,4 +1,5 @@
 import { Parser as N3Parser, Store, Writer } from 'n3';
+import * as jsonld from 'jsonld';
 import rdfDataModel from '@rdfjs/data-model';
 import { RdfXmlParser } from 'rdfxml-streaming-parser';
 import { Readable } from 'readable-stream';
@@ -12,9 +13,10 @@ type NormalizeOptions = {
 
 /** Handles RDF parsing and serialization (client-side only) */
 class RDFService {
-  /** Parse RDF content to N3 Store */
+  /** Parse RDF content to N3 Store - Note: For JSON-LD use normalizeToTurtle() instead */
   async parseRDF(content: string, format: string = 'text/turtle'): Promise<Store> {
     const normalizedFormat = this.normalizeFormat(format);
+    
     if (normalizedFormat === 'application/rdf+xml') {
       return this.parseRdfXml(content);
     }
@@ -68,6 +70,7 @@ class RDFService {
 
   /**
    * Normalize RDF content to Turtle format
+   * Supports: Turtle, N3, RDF/XML, and JSON-LD
    */
   async normalizeToTurtle(content: string, options: NormalizeOptions = {}): Promise<string> {
     try {
@@ -81,6 +84,15 @@ class RDFService {
       }
 
       const detectedFormat = format || this.detectFormat(rdfContent, url, contentType || undefined);
+      
+      // For JSON-LD, convert to N-Quads first using jsonld library, then parse with N3
+      if (detectedFormat === 'application/ld+json') {
+        const jsonData = JSON.parse(rdfContent);
+        const nquads = await jsonld.toRDF(jsonData, { format: 'application/n-quads' }) as string;
+        const store = await this.parseWithN3(nquads, 'application/n-quads');
+        return this.storeToTurtle(store);
+      }
+      
       const store = await this.parseRDF(rdfContent, detectedFormat);
       return this.storeToTurtle(store);
     } catch (error) {
