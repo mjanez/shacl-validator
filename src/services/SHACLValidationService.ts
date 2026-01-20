@@ -1,5 +1,20 @@
-import { Validator } from 'shacl-engine';
-import { validations as sparqlValidations } from 'shacl-engine/sparql.js';
+// Lazy-loaded shacl-engine imports to reduce initial bundle size
+// These are only loaded when validateRDF is called
+let _Validator: typeof import('shacl-engine').Validator | null = null;
+let _sparqlValidations: typeof import('shacl-engine/sparql.js').validations | null = null;
+
+async function getShaclEngine() {
+  if (!_Validator || !_sparqlValidations) {
+    const [shaclModule, sparqlModule] = await Promise.all([
+      import('shacl-engine'),
+      import('shacl-engine/sparql.js')
+    ]);
+    _Validator = shaclModule.Validator;
+    _sparqlValidations = sparqlModule.validations;
+  }
+  return { Validator: _Validator, sparqlValidations: _sparqlValidations };
+}
+
 import rdfDataModel from '@rdfjs/data-model';
 import rdfDataset from '@rdfjs/dataset';
 import { Parser as N3Parser } from 'n3';
@@ -119,6 +134,26 @@ class SHACLValidationService {
     }
 
     this.shaclShapesCache.set(cacheKey, dataset);
+    return dataset;
+  }
+
+  private static async parseCustomSHACL(shaclContents: string[]): Promise<any> {
+    const dataset = rdfDataset.dataset();
+    
+    for (let i = 0; i < shaclContents.length; i++) {
+      const content = shaclContents[i];
+      const fileName = `File #${i + 1}`;
+      
+      try {
+        const quads = await this.parseSHACLContent(content, `custom-shacl-${i + 1}.ttl`);
+        quads.forEach((q) => dataset.add(q));
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error(`Failed to parse custom SHACL ${fileName}:`, error);
+        throw new Error(`Invalid SHACL syntax in ${fileName}: ${errorMsg}`);
+      }
+    }
+    
     return dataset;
   }
 
@@ -286,17 +321,10 @@ class SHACLValidationService {
         foafPage: this.resolveFoafPage(shapes, sourceShape)
       };
 
-      if (this.containsDir3Reference(result) || this.containsDir3Reference(violation)) {
-        console.debug('[SHACL][DIR3] Restriction triggered', {
-          focusNode: violation.focusNode,
-          path: violation.path,
-          value: violation.value,
-          severity: violation.severity,
-          sourceConstraintComponent: violation.sourceConstraintComponent,
-          sourceShape: violation.sourceShape,
-          messages: violation.message
-        });
-      }
+      // Debug logging disabled for performance - uncomment for debugging DIR3 restrictions
+      // if (this.containsDir3Reference(result) || this.containsDir3Reference(violation)) {
+      //   console.debug('[SHACL][DIR3] Restriction triggered', violation);
+      // }
       results.push(violation);
     }
 
@@ -313,9 +341,19 @@ class SHACLValidationService {
     profile: ValidationProfile,
     format: string = 'turtle',
     language: string = 'es',
-    branch?: string
+    branch?: string,
+    customShacl?: string[],
+    mode?: 'predefined' | 'custom'
   ): Promise<SHACLReport> {
-    const shapes = await this.getSHACLShapes(profile, branch);
+    let shapes: any;
+    
+    // Use custom SHACL if mode is 'custom' and customShacl is provided
+    if (mode === 'custom' && customShacl && customShacl.length > 0) {
+      shapes = await this.parseCustomSHACL(customShacl);
+    } else {
+      shapes = await this.getSHACLShapes(profile, branch);
+    }
+    
     const preferredLanguage = this.normalizeLang(language) || 'es';
 
     if (!shapes || Array.from(shapes).length === 0) {
@@ -357,6 +395,9 @@ class SHACLValidationService {
       };
     }
 
+    // Lazy load shacl-engine only when needed
+    const { Validator, sparqlValidations } = await getShaclEngine();
+    
     const validator = new Validator(shapes, {
       factory: rdfDataModel,
       debug: false,
@@ -389,56 +430,127 @@ class SHACLValidationService {
   ): Promise<string> {
     const timestamp = new Date().toISOString();
     const mqaConfig = mqaConfigData as MQAConfig;
+    const appInfo = mqaConfig.app_info;
     const profileId = report.profile;
     const profileConfig = (mqaConfig.profiles as Record<string, any>)[profileId] || {};
     const version = profileVersion || profileSelection?.version || profileConfig?.defaultVersion;
     const versionConfig = version && profileConfig?.versions ? profileConfig.versions[version] : undefined;
     const profileName = versionConfig?.name || String(profileId);
     const profileUrl = versionConfig?.url;
+    const profileIdentifier = `${profileId}-${version || 'unknown'}`;
 
+    // Count issues by severity
+    const violationCount = report.violations.length;
+    const warningCount = report.warnings.length;
+    const infoCount = report.infos.length;
+    const totalIssues = violationCount + warningCount + infoCount;
+
+    // Build prefixes
     let turtle = `@prefix sh: <http://www.w3.org/ns/shacl#> .\n`;
     turtle += `@prefix dct: <http://purl.org/dc/terms/> .\n`;
-    turtle += `@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n`;
+    turtle += `@prefix dcat: <http://www.w3.org/ns/dcat#> .\n`;
     turtle += `@prefix foaf: <http://xmlns.com/foaf/0.1/> .\n`;
+    turtle += `@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n`;
+    turtle += `@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n`;
+    turtle += `@prefix doap: <http://usefulinc.com/ns/doap#> .\n`;
+    turtle += `\n`;
 
-    turtle += `\n[ a sh:ValidationReport ;\n`;
-    turtle += `  sh:conforms ${report.conforms} ;\n`;
-    turtle += `  dct:created "${timestamp}"^^xsd:dateTime ;\n`;
-    turtle += `  dct:description "SHACL validation report for ${profileName}"@en ;\n`;
+    // Validation Report
+    turtle += `# Validation Report\n`;
+    turtle += `[ a sh:ValidationReport ;\n`;
+    turtle += `    sh:conforms ${report.conforms} ;\n`;
+    turtle += `    dct:created "${timestamp}"^^xsd:dateTime ;\n`;
+    
+    // Creator (Agent with app info)
+    turtle += `    dct:creator [ a foaf:Agent ;\n`;
+    turtle += `            foaf:name "${appInfo.name}" ;\n`;
+    turtle += `            doap:release [ a doap:Version ;\n`;
+    turtle += `                    doap:revision "${appInfo.version}" ;\n`;
+    turtle += `                    doap:created "${timestamp}"^^xsd:dateTime\n`;
+    turtle += `                  ] ;\n`;
+    turtle += `            foaf:homepage <${appInfo.url}> ;\n`;
+    turtle += `            foaf:page <${appInfo.repository}> ;\n`;
+    turtle += `            rdfs:seeAlso <${appInfo.see_also}> ;\n`;
+    turtle += `            rdfs:comment "${appInfo.description.replace(/"/g, '\\"')}"\n`;
+    turtle += `          ] ;\n`;
+
+    // Titles (bilingual)
+    turtle += `    dct:title "Informe de Validación SHACL para el perfil ${profileName} generado por ${appInfo.name} v${appInfo.version}"@es ;\n`;
+    turtle += `    dct:title "SHACL Validation Report for profile ${profileName} generated by ${appInfo.name} v${appInfo.version}"@en ;\n`;
+    
+    // Format
+    turtle += `    dct:format <http://publications.europa.eu/resource/authority/file-type/RDF_TURTLE> ;\n`;
+    
+    // Descriptions (bilingual with stats)
+    const conformsEs = report.conforms ? 'Conforme (true)' : 'No conforme (false)';
+    const conformsEn = report.conforms ? 'Conforms (true)' : 'Does not conform (false)';
+    turtle += `    dct:description "Este archivo contiene el informe de validación SHACL para el perfil ${profileName}. Se han detectado ${violationCount} violaciones. Estado de conformidad: ${conformsEs}. Número de advertencias/recomendaciones: ${warningCount}"@es ;\n`;
+    turtle += `    dct:description "This file contains the SHACL validation report for profile ${profileName}. A total of ${violationCount} violations were found. Conformance status: ${conformsEn}. Number of warnings/recommendations: ${warningCount}"@en ;\n`;
+    
+    // Link to profile documentation
     if (profileUrl) {
-      turtle += `  dct:source <${profileUrl}> ;\n`;
+      turtle += `    rdfs:seeAlso <${profileUrl}> ;\n`;
     }
 
+    // Validation results
     const allIssues = [...report.violations, ...report.warnings, ...report.infos];
     if (allIssues.length > 0) {
-      turtle += `  sh:result`;
+      turtle += `    \n    # Validation results\n`;
+      turtle += `    sh:result`;
       allIssues.forEach((issue, idx) => {
         const isLast = idx === allIssues.length - 1;
-        turtle += ` [ a sh:ValidationResult ;`;
-        turtle += ` sh:resultSeverity sh:${issue.severity} ;`;
-        if (issue.focusNode) turtle += ` sh:focusNode <${issue.focusNode}> ;`;
+        turtle += ` [ a sh:ValidationResult ;\n`;
+        turtle += `        sh:resultSeverity sh:${issue.severity} ;\n`;
+        if (issue.focusNode) turtle += `        sh:focusNode <${issue.focusNode}> ;\n`;
         if (issue.path && issue.path !== '[object Object]' && issue.path !== 'undefined') {
           if (issue.path.startsWith('http://') || issue.path.startsWith('https://') || issue.path.includes(':')) {
-            turtle += ` sh:resultPath <${issue.path}> ;`;
+            turtle += `        sh:resultPath <${issue.path}> ;\n`;
           }
         }
-        if (issue.value) turtle += ` sh:value "${issue.value.replace(/"/g, '\\"')}" ;`;
+        if (issue.value) {
+          const escapedValue = issue.value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+          turtle += `        sh:value "${escapedValue}" ;\n`;
+        }
         issue.message.forEach((msg) => {
-          const escaped = msg.text.replace(/"/g, '\\"');
+          const escaped = msg.text.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
           const literal = msg.lang ? `"${escaped}"@${msg.lang}` : `"${escaped}"`;
-          turtle += ` sh:resultMessage ${literal} ;`;
+          turtle += `        sh:resultMessage ${literal} ;\n`;
         });
-        if (issue.sourceConstraintComponent) turtle += ` sh:sourceConstraintComponent ${issue.sourceConstraintComponent.startsWith('sh:') ? issue.sourceConstraintComponent : `<${issue.sourceConstraintComponent}>`} ;`;
-        if (issue.sourceShape) turtle += ` sh:sourceShape ${issue.sourceShape.startsWith('http') ? `<${issue.sourceShape}>` : issue.sourceShape} ;`;
-        if (issue.foafPage) turtle += ` foaf:page <${issue.foafPage}> ;`;
-        turtle = turtle.replace(/;\s*$/, '');
-        turtle += isLast ? ` ] ;` : ` ] ,`;
+        if (issue.sourceConstraintComponent) {
+          const component = issue.sourceConstraintComponent.startsWith('sh:') 
+            ? issue.sourceConstraintComponent 
+            : `<${issue.sourceConstraintComponent}>`;
+          turtle += `        sh:sourceConstraintComponent ${component} ;\n`;
+        }
+        if (issue.sourceShape) {
+          const shape = issue.sourceShape.startsWith('http') ? `<${issue.sourceShape}>` : issue.sourceShape;
+          turtle += `        sh:sourceShape ${shape} ;\n`;
+        }
+        if (issue.foafPage) turtle += `        foaf:page <${issue.foafPage}> ;\n`;
+        // Remove trailing semicolon and newline, add proper ending
+        turtle = turtle.replace(/;\n\s*$/, '\n');
+        turtle += isLast ? `      ]\n` : `      ] ,\n`;
       });
-      turtle = turtle.replace(/,\s*$/, ' ;');
     }
 
-    turtle = turtle.replace(/;\s*$/, '');
-    turtle += `\n] .\n`;
+    turtle += `] .\n\n`;
+
+    // Profile Information section
+    turtle += `# Profile Information\n`;
+    turtle += `[ a dct:Standard ;\n`;
+    turtle += `    dct:title "${profileName}"@es ;\n`;
+    turtle += `    dct:title "${profileName}"@en ;\n`;
+    turtle += `    dct:identifier "${profileIdentifier}" ;\n`;
+    if (version) {
+      turtle += `    dct:hasVersion "${version}" ;\n`;
+    }
+    if (profileUrl) {
+      turtle += `    foaf:page <${profileUrl}> ;\n`;
+    }
+    turtle += `    rdfs:comment "Perfil utilizado para la validación SHACL"@es ;\n`;
+    turtle += `    rdfs:comment "Profile used for SHACL validation"@en\n`;
+    turtle += `] .\n`;
+
     return turtle;
   }
 

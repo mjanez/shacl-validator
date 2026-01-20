@@ -350,7 +350,6 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
               )}
               {report.conforms ? t('results.conforms') : t('results.notConforms')}
             </CardTitle>
-            <CardDescription>{t('results.summary', { violations: summary.violation, warnings: summary.warning, infos: summary.info })}</CardDescription>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" className="gap-2" onClick={downloadTTL}>

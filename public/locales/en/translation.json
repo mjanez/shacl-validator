@@ -49,6 +49,11 @@
     "docsCta": "Read the usage guide"
   },
   "validator": {
+    "validationMode": "Validation Mode",
+    "mode": {
+      "predefined": "Standard Profiles",
+      "custom": "Custom SHACL"
+    },
     "selectProfile": "Validation Profile",
     "version": "Version",
     "branch": "SHACL Branch",
@@ -91,12 +96,28 @@
     "profileReadyHint": "Ready to validate",
     "previewLabel": "Preview",
     "jsonPreview": "JSON-LD",
-    "normalizedPreview": "Normalized TTL"
+    "supportedFormats": "Supported: Turtle (.ttl), N3 (.n3), RDF/XML (.rdf), JSON-LD (.jsonld)",
+    "previewEmpty": "Paste or upload RDF content to see the JSON-LD preview",
+    "copyJsonLd": "Copy JSON-LD",
+    "copied": "Copied!",
+    "jsonLdHelp": "Learn about JSON-LD",
+    "unsupportedFormatError": "Unsupported file format: {{extension}}. Only Turtle (.ttl), N3 (.n3), RDF/XML (.rdf, .xml), and JSON-LD (.jsonld, .json) are supported.",
+    "converterHint": "You can convert your file to a supported format at:",
+    "largeFile": {
+      "title": "Large catalog detected",
+      "message": "The content to validate is approximately {{size}}. Validation may take several minutes.",
+      "tip": "You can navigate to another browser tab while processing. Do not close this tab.",
+      "estimatedTime": "Estimated time: {{minutes}} minutes",
+      "proceed": "Proceed",
+      "cancel": "Cancel"
+    }
   },
   "common": {
     "validate": "Validate",
     "validating": "Validating...",
-    "or": "OR"
+    "or": "OR",
+    "clear": "Clear",
+    "loading": "Loading..."
   },
   "results": {
     "conforms": "Conforms",
@@ -147,7 +168,29 @@
     "topShapesHint": "Shapes and constraints with the highest number of issues.",
     "emptyStats": "Import a report to unlock severity analytics.",
     "emptyShapes": "Upload a SHACL report to highlight the noisiest shapes.",
-    "exportSegments": "Download segments"
+    "exportSegments": "Download segments",
+    "tabs": {
+      "results": "Results",
+      "dashboard": "Dashboard"
+    },
+    "reset": "Load new report",
+    "resetHint": "Clear current report and load a new one",
+    "summary": {
+      "title": "Report Summary",
+      "totalResults": "Total results",
+      "conformance": "Conformance",
+      "conforms": "Conforms",
+      "notConforms": "Does not conform",
+      "uniqueFocusNodes": "Unique focus nodes",
+      "uniqueShapes": "Unique shapes",
+      "uniqueProperties": "Unique properties"
+    },
+    "propertyBreakdown": "Property path distribution",
+    "propertyBreakdownHint": "Properties with the most validation issues.",
+    "focusNodeBreakdown": "Focus node distribution",
+    "focusNodeBreakdownHint": "Resources with the most validation issues.",
+    "constraintBreakdown": "Constraint component breakdown",
+    "constraintBreakdownHint": "Types of constraints that fail most frequently."
   },
   "guide": {
     "title": "SHACL Guide",
@@ -195,9 +238,17 @@
           "title": "pySHACL",
           "description": "Pure Python library. Easy to install with pip. Ideal if you already work with data scripts in Python."
         },
-        "dockerPyshacl": {
-          "title": "docker-pyshacl",
-          "description": "Ready-to-use Docker image with pySHACL and DCAT-AP shapes. Perfect for CI/CD and reproducible validations."
+        "easyRdfEndpoint": {
+          "title": "easy-rdf-endpoint",
+          "description": "Dockerized RDF endpoint that simplifies catalog deployment, provides SPARQL endpoint, and incorporates semantic/syntactic validation interfaces."
+        },
+        "shaclPlay": {
+          "title": "SHACL Play!",
+          "description": "Complete SHACL toolkit: validation, documentation generation, and diagram creation. Powered by TopBraid SHACL API."
+        },
+        "metadataQuality": {
+          "title": "Metadata Quality React",
+          "description": "Interactive dashboard to analyze metadata quality (MQA) with dashboards, metrics, and exportable reports"
         }
       }
     },
@@ -250,19 +301,19 @@
       "description": "Click on any highlighted line to see what it means and how to fix related issues.",
       "placeholder": "Click on a line in the report to see its explanation.",
       "analysisTitle": "Line Analysis",
-      "tipTitle": "Pro Tip",
-      "tipContent": "Always check sh:focusNode first—it tells you exactly which resource has the problem, then look at sh:resultPath to find the missing or invalid property.",
+      "tipTitle": "Tip",
+      "tipContent": "Always check `sh:focusNode` first—it tells you **exactly which resource** has the problem; then look at `sh:resultPath` to find the **missing or invalid property**.",
       "explanations": {
-        "validationReport": "This line declares the resource as a SHACL Validation Report. Every SHACL output starts with this class.",
-        "conformsFalse": "The data does NOT conform to the SHACL shapes. There is at least one violation or warning that needs attention.",
-        "validationResult": "This block represents a single validation finding—a violation, warning, or informational note.",
-        "severityViolation": "This is a VIOLATION: a mandatory constraint is broken. You must fix this before the data can be considered compliant.",
-        "severityWarning": "This is a WARNING: a recommended constraint is not met. Fix if possible, but it may not block conformance.",
-        "minCount": "The MinCountConstraintComponent means a required property is missing or doesn't have enough values.",
-        "resultMessage": "This human-readable message explains what went wrong. Read carefully for hints on how to fix the issue.",
-        "focusNode": "The Focus Node is the exact RDF resource where the problem was detected. Use this URI to locate the issue in your data.",
-        "resultPath": "The Result Path shows which property is failing (e.g., dcat:dataset). Add or correct this property on the focus node.",
-        "value": "The sh:value field shows the actual problematic value that caused the validation to fail. Useful for understanding what specific data is incorrect."
+        "validationReport": "This line declares the resource as a **SHACL Validation Report**. Every SHACL output starts with the `sh:ValidationReport` class.",
+        "conformsFalse": "The data **does NOT conform** to the SHACL shapes (`sh:conforms false`). There is at least one violation or warning that needs attention.",
+        "validationResult": "This block represents a **single validation finding** (`sh:ValidationResult`)—a violation, warning, or informational note.",
+        "severityViolation": "This is a **VIOLATION** (`sh:Violation`): a **mandatory constraint** is broken. You must fix this before the data can be considered compliant.",
+        "severityWarning": "This is a **WARNING** (`sh:Warning`): a **recommended constraint** is not met. Fix if possible, but it may not block conformance.",
+        "minCount": "The `MinCountConstraintComponent` means a **required property is missing** or doesn't have enough values. Check `sh:minCount` in the shape definition.",
+        "resultMessage": "This **human-readable message** (`sh:resultMessage`) explains what went wrong. Read carefully for hints on how to fix the issue.",
+        "focusNode": "The **Focus Node** (`sh:focusNode`) is the **exact RDF resource** where the problem was detected. Use this URI to locate the issue in your data.",
+        "resultPath": "The **Result Path** (`sh:resultPath`) shows **which property** is failing (e.g., `dcat:dataset`). Add or correct this property on the focus node.",
+        "value": "The `sh:value` field shows the **actual problematic value** that caused the validation to fail. Useful for understanding what specific data is incorrect."
       }
     },
     "glossary": {
@@ -445,6 +496,38 @@
     "branches": {
       "main": "Stable (main)",
       "develop": "Development (develop)"
+    },
+    "manager": {
+      "title": "Custom SHACL Shapes Manager",
+      "description": "Upload, paste, or load SHACL shape files from URLs to define your validation rules",
+      "filesLoaded": "files loaded",
+      "loadedFiles": "Loaded files",
+      "file": "File",
+      "addFile": "Add file",
+      "clear": "Clear",
+      "loading": "Loading",
+      "loadUrl": "Load from URL",
+      "tabs": {
+        "paste": "Paste",
+        "upload": "Upload",
+        "url": "From URL"
+      },
+      "source": {
+        "paste": "Pasted",
+        "upload": "Uploaded",
+        "url": "URL"
+      },
+      "pastePlaceholder": "Paste your SHACL shapes here (Turtle format)...",
+      "urlPlaceholder": "https://example.com/shapes.ttl",
+      "pasteHint": "Paste SHACL shapes in Turtle, RDF/XML, or JSON-LD format",
+      "urlHint": "Enter the URL of a SHACL shapes file. Note: CORS restrictions may apply.",
+      "uploadHint": "Supports .ttl, .rdf, .xml, .n3, .jsonld files",
+      "dragDrop": "Drag and drop files here",
+      "browseFiles": "Browse files",
+      "dropActive": "Drop files here",
+      "dropInactive": "Drag SHACL files here or click to select",
+      "dropHint": "Multiple files supported",
+      "fileLoaded": "File loaded successfully"
     }
   }
 }

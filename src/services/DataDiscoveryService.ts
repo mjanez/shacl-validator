@@ -316,8 +316,8 @@ export class DataDiscoveryService {
         return this.normalizeFormatValue(labelValue);
       }
       
-      // Debug: log all format-related quads
-      console.debug('Format quads for', formatUri, ':', formatQuads);
+      // Debug logging disabled for performance
+      // console.debug('Format quads for', formatUri, ':', formatQuads);
     }
     
     // Fallback to URL-based detection
@@ -598,12 +598,12 @@ export class DataDiscoveryService {
       } catch (corsError) {
         // CORS errors are common, assume URL might be valid
         // but needs backend or proxy to access
-        console.debug(`CORS validation failed for ${url}, assuming valid:`, corsError);
+        // console.debug(`CORS validation failed for ${url}, assuming valid:`, corsError);
         return true;
       }
       
     } catch (error) {
-      console.debug(`URL validation error for ${url}:`, error);
+      // console.debug(`URL validation error for ${url}:`, error);
       // In case of errors, be permissive and allow the URL
       return true;
     }
