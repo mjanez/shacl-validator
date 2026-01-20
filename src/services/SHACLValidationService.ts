@@ -321,17 +321,10 @@ class SHACLValidationService {
         foafPage: this.resolveFoafPage(shapes, sourceShape)
       };
 
-      if (this.containsDir3Reference(result) || this.containsDir3Reference(violation)) {
-        console.debug('[SHACL][DIR3] Restriction triggered', {
-          focusNode: violation.focusNode,
-          path: violation.path,
-          value: violation.value,
-          severity: violation.severity,
-          sourceConstraintComponent: violation.sourceConstraintComponent,
-          sourceShape: violation.sourceShape,
-          messages: violation.message
-        });
-      }
+      // Debug logging disabled for performance - uncomment for debugging DIR3 restrictions
+      // if (this.containsDir3Reference(result) || this.containsDir3Reference(violation)) {
+      //   console.debug('[SHACL][DIR3] Restriction triggered', violation);
+      // }
       results.push(violation);
     }
 

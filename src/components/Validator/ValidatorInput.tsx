@@ -34,6 +34,10 @@ interface UploadState {
   error: string | null;
 }
 
+// Thresholds for large file warning
+const LARGE_FILE_THRESHOLD_KB = 2 * 1024; // 2 MB - show warning
+const ESTIMATED_TIME_PER_MB = 0.4; // ~0.4 minutes per MB based on 12.5MB = 5min
+
 const chunkSize = 256 * 1024; // 256KB
 const defaultRdfCounts = { datasets: 0, dataServices: 0, distributions: 0, hasData: false };
 
@@ -50,6 +54,9 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
   const [urlError, setUrlError] = useState<string | null>(null);
   const [uploadState, setUploadState] = useState<UploadState>({ progress: 0, isUploading: false, error: null });
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [showLargeFileWarning, setShowLargeFileWarning] = useState(false);
+  const [pendingValidation, setPendingValidation] = useState<{ payload: string; profile: ProfileSelection } | null>(null);
+  const [validatingLargeFile, setValidatingLargeFile] = useState<{ size: number } | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<ProfileSelection>({
     profile: 'dcat_ap_es' as ValidationProfile,
     version: '1.0.0',
@@ -59,6 +66,13 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
   const [customShaclFiles, setCustomShaclFiles] = useState<CustomSHACLFile[]>([]);
   const uploadCancelledRef = useRef(false);
   const [rdfCounts, setRdfCounts] = useState(defaultRdfCounts);
+
+  // Reset large file state when validation completes
+  useEffect(() => {
+    if (!isLoading) {
+      setValidatingLargeFile(null);
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     const sampleParam = searchParams.get('sample');
@@ -174,6 +188,36 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
     };
   };
 
+  // Helper to format file size
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  // Helper to estimate validation time in minutes
+  const estimateValidationTime = (sizeInBytes: number): number => {
+    const sizeInMB = sizeInBytes / (1024 * 1024);
+    return Math.max(1, Math.ceil(sizeInMB * ESTIMATED_TIME_PER_MB));
+  };
+
+  // Proceed with validation after user confirmation
+  const proceedWithValidation = () => {
+    if (pendingValidation) {
+      const payloadSize = new Blob([pendingValidation.payload]).size;
+      setValidatingLargeFile({ size: payloadSize });
+      onValidate(pendingValidation.payload, pendingValidation.profile);
+      setPendingValidation(null);
+      setShowLargeFileWarning(false);
+    }
+  };
+
+  // Cancel large file validation
+  const cancelLargeFileValidation = () => {
+    setPendingValidation(null);
+    setShowLargeFileWarning(false);
+  };
+
   const handleValidate = async () => {
     let payload = textContent;
     let fetchedContentType: string | null = null;
@@ -235,6 +279,15 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
       ...selectedProfile,
       customShacl: selectedProfile.mode === 'custom' ? customShaclFiles : undefined
     };
+
+    // Check if file is large and show warning
+    const payloadSizeKB = new Blob([payload]).size / 1024;
+    if (payloadSizeKB > LARGE_FILE_THRESHOLD_KB) {
+      setPendingValidation({ payload, profile: validationProfile });
+      setShowLargeFileWarning(true);
+      return;
+    }
+
     onValidate(payload, validationProfile);
   };
 
@@ -685,6 +738,81 @@ const ValidatorInput: React.FC<ValidatorInputProps> = ({ onValidate, isLoading }
               )}
             </TabsContent>
           </Tabs>
+
+          {/* Large file warning */}
+          {showLargeFileWarning && pendingValidation && (
+            <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500" />
+                <div className="flex-1 space-y-3">
+                  <div>
+                    <p className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                      {t('validator.largeFile.title')}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {t('validator.largeFile.message', { 
+                        size: formatFileSize(new Blob([pendingValidation.payload]).size) 
+                      })}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-lg bg-amber-500/10 p-2">
+                    <Info className="h-4 w-4 text-amber-500" />
+                    <p className="text-xs text-muted-foreground">
+                      {t('validator.largeFile.tip')}
+                    </p>
+                  </div>
+                  <p className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                    {t('validator.largeFile.estimatedTime', {
+                      minutes: estimateValidationTime(new Blob([pendingValidation.payload]).size)
+                    })}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={cancelLargeFileValidation}
+                    >
+                      {t('validator.largeFile.cancel')}
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={proceedWithValidation}
+                      className="bg-amber-600 hover:bg-amber-700"
+                    >
+                      {t('validator.largeFile.proceed')}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Large file validation in progress */}
+          {isLoading && validatingLargeFile && (
+            <div className="rounded-2xl border border-sky-500/40 bg-sky-500/10 p-4">
+              <div className="flex items-start gap-3">
+                <Loader2 className="mt-0.5 h-5 w-5 flex-shrink-0 animate-spin text-sky-500" />
+                <div className="flex-1 space-y-2">
+                  <div>
+                    <p className="text-sm font-semibold text-sky-600 dark:text-sky-400">
+                      {t('common.validating')} ({formatFileSize(validatingLargeFile.size)})
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {t('validator.largeFile.estimatedTime', {
+                        minutes: estimateValidationTime(validatingLargeFile.size)
+                      })}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-lg bg-sky-500/10 p-2">
+                    <Info className="h-4 w-4 text-sky-500" />
+                    <p className="text-xs text-muted-foreground">
+                      {t('validator.largeFile.tip')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card/70 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>

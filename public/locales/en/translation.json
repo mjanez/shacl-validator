@@ -102,7 +102,15 @@
     "copied": "Copied!",
     "jsonLdHelp": "Learn about JSON-LD",
     "unsupportedFormatError": "Unsupported file format: {{extension}}. Only Turtle (.ttl), N3 (.n3), RDF/XML (.rdf, .xml), and JSON-LD (.jsonld, .json) are supported.",
-    "converterHint": "You can convert your file to a supported format at:"
+    "converterHint": "You can convert your file to a supported format at:",
+    "largeFile": {
+      "title": "Large catalog detected",
+      "message": "The content to validate is approximately {{size}}. Validation may take several minutes.",
+      "tip": "You can navigate to another browser tab while processing. Do not close this tab.",
+      "estimatedTime": "Estimated time: {{minutes}} minutes",
+      "proceed": "Proceed",
+      "cancel": "Cancel"
+    }
   },
   "common": {
     "validate": "Validate",
