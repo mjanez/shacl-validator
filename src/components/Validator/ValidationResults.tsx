@@ -175,6 +175,16 @@ const selectMessageForLocale = (messages: SHACLMessage[], preferred?: string, fa
   return (noLang || messages[0]).text;
 };
 
+/**
+ * Formats a number with thousands separator according to locale
+ * @param value The number to format
+ * @param locale The locale ('es' uses dot, 'en' uses comma)
+ */
+const formatNumber = (value: number, locale: string = 'es'): string => {
+  const separator = locale === 'es' ? '.' : ',';
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+};
+
 interface GroupedFinding {
   id: string;
   severity: SHACLSeverity;
@@ -372,7 +382,7 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
             ].map((card) => (
               <div key={card.label} className="rounded-2xl border border-border p-4">
                 <p className="text-xs uppercase text-muted-foreground">{card.label}</p>
-                <p className={cn('mt-2 text-3xl font-semibold', card.accent)}>{card.value}</p>
+                <p className={cn('mt-2 text-3xl font-semibold', card.accent)}>{formatNumber(card.value, activeLanguage)}</p>
                 {card.label === t('results.totalShapes') && history.length > 0 && (
                   <div className="mt-3 h-16">
                     <ResponsiveContainer width="100%" height="100%">
@@ -428,7 +438,8 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
                 {groupedFindings.map((group) => {
                   const severityKey = group.severity.toLowerCase() as 'violation' | 'warning' | 'info';
                   const visuals = severityVisuals[group.severity];
-                  const affectedLabel = group.total === 1 ? t('results.affectedSingle') : t('results.affectedPlural', { count: group.total });
+                  const formattedCount = formatNumber(group.total, activeLanguage);
+                  const affectedLabel = group.total === 1 ? t('results.affectedSingle') : t('results.affectedPlural', { count: group.total, formattedCount });
                   const isOpen = expandedGroups[group.id] ?? false;
                   const localizedMessage = group.messages.length ? selectMessageForLocale(group.messages, activeLanguage) : undefined;
                   const messageToRender = localizedMessage || t('table.message');
