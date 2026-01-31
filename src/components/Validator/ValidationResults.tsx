@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SHACLReport, SHACLSeverity, SHACLMessage } from '../../types';
+import { SHACLReport, SHACLSeverity, SHACLMessage, HumanizedNode } from '../../types';
 import SHACLValidationService from '../../services/SHACLValidationService';
 import ReactMarkdown from 'react-markdown';
 import { Badge } from '../ui/badge';
@@ -104,6 +104,37 @@ const renderLinkedValue = (value?: string, label?: string) => {
   );
 };
 
+/**
+ * Renders a value with humanized information for blank nodes
+ * Shows type badge + label when available, otherwise falls back to the original value
+ */
+const renderHumanizedValue = (value?: string, humanized?: HumanizedNode) => {
+  if (!value) {
+    return <span className="text-muted-foreground">—</span>;
+  }
+
+  // If we have humanized info, show it nicely
+  if (humanized && (humanized.label || humanized.typeLabel)) {
+    return (
+      <div className="flex flex-col gap-0.5" title={`${humanized.originalId}${humanized.type ? ` (${humanized.type})` : ''}`}>
+        {humanized.typeLabel && (
+          <span className="inline-flex w-fit items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+            {humanized.typeLabel}
+          </span>
+        )}
+        {humanized.label ? (
+          <span className="line-clamp-2 break-all text-xs">{humanized.label}</span>
+        ) : (
+          <span className="line-clamp-1 break-all font-mono text-[10px] text-muted-foreground">{humanized.originalId}</span>
+        )}
+      </div>
+    );
+  }
+
+  // Fall back to standard rendering
+  return renderLinkedValue(value);
+};
+
 const markdownComponents = {
   a: ({ node, ...props }: any) => (
     <a
@@ -192,7 +223,14 @@ interface GroupedFinding {
   sourceShape?: string;
   sourceConstraintComponent?: string;
   foafPage?: string;
-  occurrences: Array<{ id: string; focusNode?: string; path?: string; value?: string }>;
+  occurrences: Array<{
+    id: string;
+    focusNode?: string;
+    path?: string;
+    value?: string;
+    humanizedFocusNode?: HumanizedNode;
+    humanizedValue?: HumanizedNode;
+  }>;
   total: number;
 }
 
@@ -297,7 +335,9 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
         id: `${key}-${group.occurrences.length}-${index}`,
         focusNode: row.focusNode,
         path: row.path,
-        value: row.value
+        value: row.value,
+        humanizedFocusNode: row.humanizedFocusNode,
+        humanizedValue: row.humanizedValue
       });
       group.total += 1;
     });
@@ -511,9 +551,9 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
                               key={item.id}
                               className="grid grid-cols-[minmax(0,0.6fr)_minmax(0,0.5fr)_minmax(0,0.4fr)] gap-4 px-4 py-3 text-xs text-foreground odd:bg-card/40"
                             >
-                              <div className="min-w-0">{renderLinkedValue(item.focusNode)}</div>
+                              <div className="min-w-0">{renderHumanizedValue(item.focusNode, item.humanizedFocusNode)}</div>
                               <div className="min-w-0">{renderLinkedValue(item.path, compactIri(item.path))}</div>
-                              <div className="min-w-0">{renderLinkedValue(item.value)}</div>
+                              <div className="min-w-0">{renderHumanizedValue(item.value, item.humanizedValue)}</div>
                             </div>
                           ))}
                         </div>

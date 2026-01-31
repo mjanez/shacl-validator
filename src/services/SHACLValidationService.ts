@@ -27,13 +27,129 @@ import {
   SHACLSeverity,
   SHACLMessage,
   MQAConfig,
-  ProfileSelection
+  ProfileSelection,
+  HumanizedNode
 } from '../types';
 import mqaConfigData from '../config/mqa-config.json';
+
+const iriPrefixes: Array<{ iri: string; prefix: string }> = [
+  { iri: 'http://www.w3.org/ns/adms#', prefix: 'adms' },
+  { iri: 'http://www.w3.org/2011/content#', prefix: 'cnt' },
+  { iri: 'http://www.w3.org/ns/dcat#', prefix: 'dcat' },
+  { iri: 'http://data.europa.eu/r5r/', prefix: 'dcatap' },
+  { iri: 'http://purl.org/dc/terms/', prefix: 'dct' },
+  { iri: 'http://data.europa.eu/eli/ontology#', prefix: 'eli' },
+  { iri: 'http://xmlns.com/foaf/0.1/', prefix: 'foaf' },
+  { iri: 'http://www.opengis.net/ont/geosparql#', prefix: 'geo' },
+  { iri: 'http://www.w3.org/ns/locn#', prefix: 'locn' },
+  { iri: 'http://www.w3.org/ns/odrl/2/', prefix: 'odrl' },
+  { iri: 'http://www.w3.org/ns/prov#', prefix: 'prov' },
+  { iri: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', prefix: 'rdf' },
+  { iri: 'http://www.w3.org/2000/01/rdf-schema#', prefix: 'rdfs' },
+  { iri: 'http://schema.org/', prefix: 'schema' },
+  { iri: 'http://www.w3.org/2004/02/skos/core#', prefix: 'skos' },
+  { iri: 'http://spdx.org/rdf/terms#', prefix: 'spdx' },
+  { iri: 'http://www.w3.org/2006/time#', prefix: 'time' },
+  { iri: 'http://www.w3.org/2006/vcard/ns#', prefix: 'vcard' },
+  { iri: 'http://www.w3.org/2001/XMLSchema#', prefix: 'xsd' },
+  { iri: 'http://www.w3.org/ns/dqv#', prefix: 'dqv' },
+  { iri: 'http://www.w3.org/ns/shacl#', prefix: 'sh' },
+  { iri: 'http://www.w3.org/2002/07/owl#', prefix: 'owl' }
+];
 
 class SHACLValidationService {
   private static shaclShapesCache: Map<ValidationProfile | string, any> = new Map();
   private static readonly FOAF_PAGE_PREDICATE = 'http://xmlns.com/foaf/0.1/page';
+  private static readonly RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
+  
+  /** Predicates to look for when humanizing blank nodes (ordered by priority) */
+  private static readonly LABEL_PREDICATES = [
+    'http://www.w3.org/2000/01/rdf-schema#label',
+    'http://purl.org/dc/terms/title',
+    'http://xmlns.com/foaf/0.1/name',
+    'http://www.w3.org/2004/02/skos/core#prefLabel',
+    'http://schema.org/name',
+    'http://www.w3.org/2006/vcard/ns#fn',
+    'http://www.w3.org/2006/vcard/ns#organization-name',
+    'http://purl.org/dc/terms/identifier',
+    'http://www.w3.org/2006/vcard/ns#hasEmail',
+    'http://xmlns.com/foaf/0.1/mbox'
+  ];
+
+  /**
+   * Checks if a value represents a blank node
+   */
+  private static isBlankNode(value?: string): boolean {
+    if (!value) return false;
+    // Blank nodes typically start with 'b' followed by digits, or '_:' prefix
+    // Also detect internal IDs from parsers like b15_b30833
+    return /^_:|^b\d+_|^n\d+$/i.test(value) || 
+           (!/^https?:\/\//i.test(value) && /^[a-z]\d+(_[a-z]?\d+)+$/i.test(value));
+  }
+
+  /**
+   * Extracts a short type name from a full IRI
+   */
+  private static extractTypeName(typeIri: string): string {
+    const match = iriPrefixes.find((entry) => typeIri.startsWith(entry.iri));
+    if (match) {
+      return `${match.prefix}:${typeIri.slice(match.iri.length)}`;
+    }
+    const hashIndex = typeIri.lastIndexOf('#');
+    if (hashIndex >= 0) return typeIri.slice(hashIndex + 1);
+    const slashIndex = typeIri.lastIndexOf('/');
+    if (slashIndex >= 0) return typeIri.slice(slashIndex + 1);
+    return typeIri;
+  }
+
+  /**
+   * Humanizes a blank node by finding identifying properties in the data graph
+   */
+  private static humanizeBlankNode(nodeId: string, dataset: any): HumanizedNode | undefined {
+    if (!nodeId || !dataset) return undefined;
+    if (!this.isBlankNode(nodeId)) return undefined;
+
+    const humanized: HumanizedNode = { originalId: nodeId };
+
+    try {
+      // Iterate through all quads to find matching subjects
+      for (const quad of dataset) {
+        const subjectValue = this.extractTermValue(quad.subject);
+        if (subjectValue !== nodeId && !subjectValue.endsWith(nodeId)) continue;
+
+        const predicateValue = this.extractTermValue(quad.predicate);
+        const objectValue = this.extractTermValue(quad.object);
+
+        // Check for rdf:type
+        if (predicateValue === this.RDF_TYPE && !humanized.type) {
+          humanized.type = objectValue;
+          humanized.typeLabel = this.extractTypeName(objectValue);
+        }
+
+        // Check for label predicates
+        if (this.LABEL_PREDICATES.includes(predicateValue) && !humanized.label) {
+          let labelValue = objectValue;
+          // Clean up mailto: prefix for emails
+          if (labelValue.startsWith('mailto:')) {
+            labelValue = labelValue.replace('mailto:', '');
+          }
+          humanized.label = labelValue;
+        }
+
+        // Early exit if we have both type and label
+        if (humanized.type && humanized.label) break;
+      }
+
+      // Return humanized info if we found useful data
+      if (humanized.label || humanized.type) {
+        return humanized;
+      }
+    } catch (error) {
+      console.warn('[SHACL] Error humanizing blank node:', nodeId, error);
+    }
+
+    return undefined;
+  }
 
   private static containsDir3Reference(value: any, depth: number = 0): boolean {
     if (depth > 10 || value === null || value === undefined) {
@@ -302,17 +418,21 @@ class SHACLValidationService {
     validationReport: any,
     shapes: any,
     profile: ValidationProfile,
-    preferredLanguage?: string
+    preferredLanguage?: string,
+    dataDataset?: any
   ): SHACLValidationResult {
     const results: SHACLViolation[] = [];
     const rawResults = validationReport?.results || [];
 
     for (const result of rawResults) {
       const sourceShape = this.extractTermValue(result.sourceShape);
+      const focusNode = this.extractTermValue(result.focusNode);
+      const value = this.extractTermValue(result.value);
+      
       const violation: SHACLViolation = {
-        focusNode: this.extractTermValue(result.focusNode),
+        focusNode,
         path: this.extractPath(result.path),
-        value: this.extractTermValue(result.value),
+        value,
         message: this.extractMessages(result, preferredLanguage),
         severity: this.mapSeverityFromSHACLEngine(result.severity || result.resultSeverity),
         sourceConstraintComponent: this.extractTermValue(result.sourceConstraintComponent || result.constraintComponent),
@@ -320,6 +440,16 @@ class SHACLValidationService {
         resultSeverity: this.extractTermValue(result.resultSeverity),
         foafPage: this.resolveFoafPage(shapes, sourceShape)
       };
+
+      // Humanize blank nodes if we have the data dataset
+      if (dataDataset) {
+        if (focusNode && this.isBlankNode(focusNode)) {
+          violation.humanizedFocusNode = this.humanizeBlankNode(focusNode, dataDataset);
+        }
+        if (value && this.isBlankNode(value)) {
+          violation.humanizedValue = this.humanizeBlankNode(value, dataDataset);
+        }
+      }
 
       // Debug logging disabled for performance - uncomment for debugging DIR3 restrictions
       // if (this.containsDir3Reference(result) || this.containsDir3Reference(violation)) {
@@ -406,7 +536,7 @@ class SHACLValidationService {
     });
 
     const report = await validator.validate({ dataset: data });
-    const parsed = this.parseSHACLResult(report, shapes, profile, preferredLanguage);
+    const parsed = this.parseSHACLResult(report, shapes, profile, preferredLanguage, data);
 
     const violations = parsed.results.filter((r) => r.severity === 'Violation');
     const warnings = parsed.results.filter((r) => r.severity === 'Warning');
