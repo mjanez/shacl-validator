@@ -84,88 +84,6 @@ export const extractTypeName = (typeIri: string): string => {
 };
 
 /**
- * DCAT-AP-ES documentation URL patterns
- */
-const DCAT_AP_ES_DOC_BASE = 'https://datosgobes.github.io/DCAT-AP-ES';
-
-/**
- * Infers the DCAT entity from a source shape IRI or compact name
- * This is the primary method to determine entity context for documentation URLs
- */
-const inferEntityFromShape = (sourceShape?: string): string | undefined => {
-  if (!sourceShape) return undefined;
-  
-  const shapeCompact = sourceShape.startsWith('http') 
-    ? compactIri(sourceShape).toLowerCase() 
-    : sourceShape.toLowerCase();
-  
-  // Remove common suffixes and separators to get the core entity name
-  const cleanShape = shapeCompact
-    .replace(/shape$/i, '')
-    .replace(/nodeshape$/i, '')
-    .replace(/propertyshape$/i, '')
-    .replace(/_/g, '')
-    .replace(/-/g, '')
-    .replace(/:/g, '');
-  
-  // Map common patterns to DCAT-AP-ES entities
-  // Order matters: check most specific patterns first
-  if (cleanShape.includes('catalogrecord')) return 'CatalogRecord';
-  if (cleanShape.includes('datasetseries')) return 'DatasetSeries';
-  if (cleanShape.includes('dataservice')) return 'DataService';
-  if (cleanShape.includes('distribution')) return 'Distribution';
-  if (cleanShape.includes('dataset')) return 'Dataset';
-  if (cleanShape.includes('catalog')) return 'Catalog';
-  if (cleanShape.includes('organization')) return 'Agent';  // Organization is a subclass of Agent
-  if (cleanShape.includes('agent')) return 'Agent';
-  if (cleanShape.includes('person')) return 'Agent';
-  if (cleanShape.includes('attribution')) return 'Attribution';
-  if (cleanShape.includes('relationship')) return 'Relationship';
-  if (cleanShape.includes('periodof') || cleanShape.includes('perioftime')) return 'PeriodOfTime';
-  if (cleanShape.includes('location')) return 'Location';
-  if (cleanShape.includes('checksum')) return 'Checksum';
-  if (cleanShape.includes('identifier')) return 'Identifier';
-  if (cleanShape.includes('standard')) return 'Standard';
-  if (cleanShape.includes('document')) return 'Document';
-  if (cleanShape.includes('concept')) return 'Concept';
-  if (cleanShape.includes('kind') || cleanShape.includes('vcard')) return 'Kind';
-  
-  return undefined;
-};
-
-/**
- * Builds a documentation URL for the DCAT-AP-ES guide based on the property path
- * Strategy: Always try to determine the entity context from sourceShape for Entity.property format
- * @param path The property path (e.g., "http://purl.org/dc/terms/publisher" or "dct:publisher")
- * @param sourceShape Optional source shape to help determine the entity context
- * @returns Documentation URL or undefined if not applicable
- */
-export const buildDcatApEsDocUrl = (path?: string, sourceShape?: string): string | undefined => {
-  if (!path) return undefined;
-  
-  // Compact the path if it's a full IRI
-  const compactPath = path.startsWith('http') ? compactIri(path) : path;
-  
-  // Extract just the property name (e.g., "publisher" from "dct:publisher")
-  const colonIndex = compactPath.indexOf(':');
-  const propertyName = colonIndex >= 0 ? compactPath.slice(colonIndex + 1) : compactPath;
-  
-  if (!propertyName) return undefined;
-  
-  // ALWAYS try to infer entity from sourceShape first (most accurate)
-  const entity = inferEntityFromShape(sourceShape);
-  
-  // Build URL with entity context (preferred format: Entity.property)
-  if (entity && propertyName) {
-    return `${DCAT_AP_ES_DOC_BASE}/#${entity}.${propertyName}`;
-  }
-  
-  // FALLBACK: Use direct property anchor only if we couldn't determine entity
-  // This should be rare - most SHACL violations have sourceShape
-  return `${DCAT_AP_ES_DOC_BASE}/#${propertyName}`;
-};
-
-/**
  * Extracts URLs from a message text
  * @param text The message text that may contain URLs
  * @returns Array of URLs found in the text
@@ -174,11 +92,4 @@ export const extractUrlsFromText = (text: string): string[] => {
   const urlRegex = /https?:\/\/[^\s<>)]+/gi;
   const matches = text.match(urlRegex);
   return matches || [];
-};
-
-/**
- * Checks if a URL points to DCAT-AP-ES documentation
- */
-export const isDcatApEsDocUrl = (url: string): boolean => {
-  return url.startsWith(DCAT_AP_ES_DOC_BASE);
 };

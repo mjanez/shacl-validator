@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SHACLReport, SHACLSeverity, SHACLMessage, HumanizedNode } from '../../types';
+import { SHACLReport, SHACLSeverity, SHACLMessage, HumanizedNode, ProfileSelection } from '../../types';
 import SHACLValidationService from '../../services/SHACLValidationService';
 import ReactMarkdown from 'react-markdown';
 import { Badge } from '../ui/badge';
@@ -20,11 +20,13 @@ import {
 import * as Comlink from 'comlink';
 import { ResponsiveContainer, LineChart, Line } from 'recharts';
 import { cn } from '../../lib/utils';
-import { compactIri, buildDcatApEsDocUrl, extractUrlsFromText } from '../../lib/rdfPrefixes';
+import { compactIri, extractUrlsFromText } from '../../lib/rdfPrefixes';
 import type { ReportWorkerApi, FlattenedRow } from '../../workers/reportWorker';
+import mqaConfig from '../../config/mqa-config.json';
 
 interface ValidationResultsProps {
   report: SHACLReport;
+  profileSelection?: ProfileSelection;
 }
 
 const HISTORY_KEY = 'shacl-history';
@@ -216,9 +218,9 @@ const severityVisuals: Record<SHACLSeverity, { dot: string; pill: string }> = {
 };
 
 const MAX_VISIBLE_FINDINGS = 10;
-const RESULT_CARD_ESTIMATED_HEIGHT = 210;
+const RESULT_CARD_ESTIMATED_HEIGHT = 180; // Altura estimada por card para scroll
 
-const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
+const ValidationResults: React.FC<ValidationResultsProps> = ({ report, profileSelection }) => {
   const { t, i18n } = useTranslation();
   const activeLanguage = normalizeLang(i18n.language) || 'es';
   const [rows, setRows] = useState<FlattenedRow[]>([]);
@@ -347,6 +349,20 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
     URL.revokeObjectURL(url);
   };
 
+  // Get the guide URL from the profile configuration
+  const getGuideUrl = (): string | undefined => {
+    if (!profileSelection || profileSelection.mode === 'custom') return undefined;
+    
+    const profiles = mqaConfig.profiles as Record<string, any>;
+    const profileConfig = profiles[profileSelection.profile];
+    if (!profileConfig) return undefined;
+    
+    const versionConfig = profileConfig.versions?.[profileSelection.version];
+    return versionConfig?.url;
+  };
+
+  const guideUrl = getGuideUrl();
+
   return (
     <div className="space-y-6">
       <Card>
@@ -360,6 +376,18 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
               )}
               {report.conforms ? t('results.conforms') : t('results.notConforms')}
             </CardTitle>
+            {guideUrl && (
+              <a
+                href={guideUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary transition-all hover:bg-primary/15"
+                title={t('results.guideLink')}
+              >
+                <BookOpen className="h-3.5 w-3.5" />
+                <span>{t('results.guideLink')}</span>
+              </a>
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" className="gap-2" onClick={downloadTTL}>
@@ -431,7 +459,7 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
                 className={cn(
                   'space-y-4 transition-all duration-300',
                   scrollNeeded &&
-                    'overflow-y-auto pr-2 [scrollbar-color:hsl(var(--primary)_/_0.5)_transparent] [scrollbar-width:thin]'
+                    'overflow-y-auto pr-2 [scrollbar-color:hsl(var(--primary)_/_0.6)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary/60 [&::-webkit-scrollbar-track]:bg-transparent'
                 )}
                 style={scrollContainerStyle}
               >
@@ -443,9 +471,6 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
                   const isOpen = expandedGroups[group.id] ?? false;
                   const localizedMessage = group.messages.length ? selectMessageForLocale(group.messages, activeLanguage) : undefined;
                   const messageToRender = localizedMessage || t('table.message');
-                  // Generate DCAT-AP-ES guide link from path
-                  const representativePath = group.occurrences[0]?.path;
-                  const dcatGuideUrl = representativePath ? buildDcatApEsDocUrl(representativePath, group.sourceShape) : undefined;
 
                   return (
                     <div key={group.id} className="rounded-2xl border border-border/80 bg-card/60 p-4">
@@ -465,18 +490,6 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
                               >
                                 <ExternalLink className="h-3 w-3" />
                                 {t('results.documentationLink')}
-                              </a>
-                            )}
-                            {dcatGuideUrl && (
-                              <a
-                                href={dcatGuideUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/5 px-2 py-0.5 text-[11px] font-semibold text-primary transition hover:bg-primary/15"
-                                title={t('results.guideLink')}
-                              >
-                                <BookOpen className="h-3 w-3" />
-                                {t('results.guideLink')}
                               </a>
                             )}
                           </div>
@@ -538,7 +551,13 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
                 })}
               </div>
               {scrollNeeded && (
-                <div className="pointer-events-none absolute inset-x-1 bottom-0 h-16 rounded-b-2xl bg-gradient-to-t from-[hsl(var(--background))] via-[hsl(var(--background)/0.7)] to-transparent" />
+                <>
+                  <div className="pointer-events-none absolute inset-x-1 bottom-0 h-20 rounded-b-2xl bg-gradient-to-t from-[hsl(var(--background))] via-[hsl(var(--background)/0.8)] to-transparent" />
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-full bg-muted/90 px-3 py-1 text-xs text-muted-foreground backdrop-blur-sm">
+                    <ChevronDown className="h-3 w-3 animate-pulse" />
+                    <span>{t('results.scrollToSeeMore', { count: groupedFindings.length - MAX_VISIBLE_FINDINGS })}</span>
+                  </div>
+                </>
               )}
             </div>
           )}
