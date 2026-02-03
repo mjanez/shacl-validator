@@ -38,7 +38,8 @@ const AppRouter: React.FC = () => {
         normalizedLanguage,
         profile.branch,
         customShaclContents,
-        profile.mode
+        profile.mode,
+        profile.version
       );
       setReport(result);
     } catch (error) {

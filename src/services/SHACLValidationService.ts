@@ -175,31 +175,34 @@ class SHACLValidationService {
     return cleaned;
   }
 
-  private static getSHACLFilesForProfile(profile: ValidationProfile, branch?: string): string[] {
+  private static getSHACLFilesForProfile(profile: ValidationProfile, branch?: string, version?: string): string[] {
     const mqaConfig = mqaConfigData as MQAConfig;
     const profileConfig = mqaConfig.profiles[profile];
     if (!profileConfig) return [];
     
-    const version = profileConfig.defaultVersion;
-    const versionConfig = profileConfig.versions[version];
+    const selectedVersion = version || profileConfig.defaultVersion;
+    const versionConfig = profileConfig.versions[selectedVersion];
     const shaclFiles = versionConfig?.shaclFiles || [];
     
     const selectedBranch = branch || profileConfig.defaultBranch || 'main';
     return shaclFiles.map(file => file.replace('{branch}', selectedBranch));
   }
 
-  private static async getSHACLShapes(profile: ValidationProfile, branch?: string): Promise<any> {
-    const cacheKey = branch ? `${profile}:${branch}` : profile;
+  private static async getSHACLShapes(profile: ValidationProfile, branch?: string, version?: string): Promise<any> {
+    const cacheKey = `${profile}:${version || 'default'}:${branch || 'default'}`;
     
     if (this.shaclShapesCache.has(cacheKey)) {
+      console.log(`[SHACL] Using cached shapes for ${profile} v${version || 'default'} (${branch || 'default'})`);
       return this.shaclShapesCache.get(cacheKey);
     }
 
+    console.log(`[SHACL] Loading shapes for ${profile} v${version || 'default'} (${branch || 'default'})`);
     const dataset = rdfDataset.dataset();
-    const files = this.getSHACLFilesForProfile(profile, branch);
+    const files = this.getSHACLFilesForProfile(profile, branch, version);
 
     for (const shaclFile of files) {
       const url = shaclFile.startsWith('http') ? shaclFile : `/${shaclFile}`;
+      console.log(`[SHACL] Fetching SHACL file: ${url}`);
       const response = await fetch(url);
       if (!response.ok) {
         console.warn(`Failed to fetch SHACL file ${url}: ${response.status}`);
@@ -434,7 +437,8 @@ class SHACLValidationService {
     language: string = 'es',
     branch?: string,
     customShacl?: string[],
-    mode?: 'predefined' | 'custom'
+    mode?: 'predefined' | 'custom',
+    version?: string
   ): Promise<SHACLReport> {
     let shapes: any;
     
@@ -442,7 +446,7 @@ class SHACLValidationService {
     if (mode === 'custom' && customShacl && customShacl.length > 0) {
       shapes = await this.parseCustomSHACL(customShacl);
     } else {
-      shapes = await this.getSHACLShapes(profile, branch);
+      shapes = await this.getSHACLShapes(profile, branch, version);
     }
     
     const preferredLanguage = this.normalizeLang(language) || 'es';
