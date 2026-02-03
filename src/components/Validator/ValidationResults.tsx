@@ -120,6 +120,7 @@ const markdownComponents = {
 /**
  * Converts pipe-separated text to bullet list and ensures URLs render as links.
  * Preserves markdown tables.
+ * Always converts plain URLs to markdown links for proper rendering.
  */
 const preprocessMarkdown = (text: string): string => {
   const isMarkdownTable = /^\s*\|?.+\|.+\n\s*\|?\s*[-:\s|]+\|/.test(text);
@@ -127,16 +128,30 @@ const preprocessMarkdown = (text: string): string => {
     return text;
   }
 
+  let processed = text;
+  
+  // Convert pipe separators to bullet list
   const hasPipeSeparators = /\s*\|\s*/.test(text);
-  if (!hasPipeSeparators) {
-    return text;
+  if (hasPipeSeparators) {
+    processed = processed.replace(/\s*\|\s*/g, '\n- ');
   }
 
-  let processed = text.replace(/\s*\|\s*/g, '\n- ');
+  // Always convert plain URLs to markdown links (even without pipe separators)
+  const markdownLinks: string[] = [];
+  processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match) => {
+    const placeholder = `__MDLINK_${markdownLinks.length}__`;
+    markdownLinks.push(match);
+    return placeholder;
+  });
+
   processed = processed.replace(
-    /<?(https?:\/\/[^\s<>)]+)>?/gi,
-    (match, url) => `[${url}](${url})`
+    /https?:\/\/[^\s<>)]+/gi,
+    (url) => `[${url}](${url})`
   );
+
+  markdownLinks.forEach((link, idx) => {
+    processed = processed.replace(`__MDLINK_${idx}__`, link);
+  });
 
   return processed;
 };
@@ -376,20 +391,21 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report, profileSe
               )}
               {report.conforms ? t('results.conforms') : t('results.notConforms')}
             </CardTitle>
-            {guideUrl && (
-              <a
-                href={guideUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-2 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary transition-all hover:bg-primary/15"
-                title={t('results.guideLink')}
-              >
-                <BookOpen className="h-3.5 w-3.5" />
-                <span>{t('results.guideLink')}</span>
-              </a>
-            )}
           </div>
           <div className="flex flex-wrap gap-2">
+            {guideUrl && (
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="gap-2 border-primary/40 bg-primary/5 text-primary hover:bg-primary/15 hover:text-primary"
+              >
+                <a href={guideUrl} target="_blank" rel="noreferrer" title={t('results.guideLink')}>
+                  <BookOpen className="h-4 w-4" />
+                  {t('results.guideLink')}
+                </a>
+              </Button>
+            )}
             <Button variant="outline" size="sm" className="gap-2" onClick={downloadTTL}>
               <Download className="h-4 w-4" />
               {t('results.downloadTTL')}
