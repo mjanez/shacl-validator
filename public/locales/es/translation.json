@@ -134,10 +134,12 @@
     "downloadCSV": "Descargar como CSV",
     "totalShapes": "Hallazgos totales",
     "documentationLink": "Documentación",
+    "guideLink": "Guía de uso",
     "affectedSingle": "1 recurso afectado",
     "affectedPlural": "{{count}} recursos afectados",
     "showOccurrences": "Mostrar nodos afectados",
-    "hideOccurrences": "Ocultar nodos afectados"
+    "hideOccurrences": "Ocultar nodos afectados",
+    "scrollToSeeMore": "Desplázate para ver {{count}} más"
   },
   "severity": {
     "violation": "Error",

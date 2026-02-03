@@ -30,32 +30,8 @@ import {
   ProfileSelection,
   HumanizedNode
 } from '../types';
+import { iriPrefixes, extractTypeName } from '../lib/rdfPrefixes';
 import mqaConfigData from '../config/mqa-config.json';
-
-const iriPrefixes: Array<{ iri: string; prefix: string }> = [
-  { iri: 'http://www.w3.org/ns/adms#', prefix: 'adms' },
-  { iri: 'http://www.w3.org/2011/content#', prefix: 'cnt' },
-  { iri: 'http://www.w3.org/ns/dcat#', prefix: 'dcat' },
-  { iri: 'http://data.europa.eu/r5r/', prefix: 'dcatap' },
-  { iri: 'http://purl.org/dc/terms/', prefix: 'dct' },
-  { iri: 'http://data.europa.eu/eli/ontology#', prefix: 'eli' },
-  { iri: 'http://xmlns.com/foaf/0.1/', prefix: 'foaf' },
-  { iri: 'http://www.opengis.net/ont/geosparql#', prefix: 'geo' },
-  { iri: 'http://www.w3.org/ns/locn#', prefix: 'locn' },
-  { iri: 'http://www.w3.org/ns/odrl/2/', prefix: 'odrl' },
-  { iri: 'http://www.w3.org/ns/prov#', prefix: 'prov' },
-  { iri: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', prefix: 'rdf' },
-  { iri: 'http://www.w3.org/2000/01/rdf-schema#', prefix: 'rdfs' },
-  { iri: 'http://schema.org/', prefix: 'schema' },
-  { iri: 'http://www.w3.org/2004/02/skos/core#', prefix: 'skos' },
-  { iri: 'http://spdx.org/rdf/terms#', prefix: 'spdx' },
-  { iri: 'http://www.w3.org/2006/time#', prefix: 'time' },
-  { iri: 'http://www.w3.org/2006/vcard/ns#', prefix: 'vcard' },
-  { iri: 'http://www.w3.org/2001/XMLSchema#', prefix: 'xsd' },
-  { iri: 'http://www.w3.org/ns/dqv#', prefix: 'dqv' },
-  { iri: 'http://www.w3.org/ns/shacl#', prefix: 'sh' },
-  { iri: 'http://www.w3.org/2002/07/owl#', prefix: 'owl' }
-];
 
 class SHACLValidationService {
   private static shaclShapesCache: Map<ValidationProfile | string, any> = new Map();
@@ -88,21 +64,6 @@ class SHACLValidationService {
   }
 
   /**
-   * Extracts a short type name from a full IRI
-   */
-  private static extractTypeName(typeIri: string): string {
-    const match = iriPrefixes.find((entry) => typeIri.startsWith(entry.iri));
-    if (match) {
-      return `${match.prefix}:${typeIri.slice(match.iri.length)}`;
-    }
-    const hashIndex = typeIri.lastIndexOf('#');
-    if (hashIndex >= 0) return typeIri.slice(hashIndex + 1);
-    const slashIndex = typeIri.lastIndexOf('/');
-    if (slashIndex >= 0) return typeIri.slice(slashIndex + 1);
-    return typeIri;
-  }
-
-  /**
    * Humanizes a blank node by finding identifying properties in the data graph
    */
   private static humanizeBlankNode(nodeId: string, dataset: any): HumanizedNode | undefined {
@@ -123,7 +84,7 @@ class SHACLValidationService {
         // Check for rdf:type
         if (predicateValue === this.RDF_TYPE && !humanized.type) {
           humanized.type = objectValue;
-          humanized.typeLabel = this.extractTypeName(objectValue);
+          humanized.typeLabel = extractTypeName(objectValue);
         }
 
         // Check for label predicates

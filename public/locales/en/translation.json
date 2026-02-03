@@ -131,10 +131,12 @@
     "downloadCSV": "Download as CSV",
     "totalShapes": "Total findings",
     "documentationLink": "Documentation",
+    "guideLink": "User guide",
     "affectedSingle": "1 affected resource",
     "affectedPlural": "{{count}} affected resources",
     "showOccurrences": "Show affected nodes",
-    "hideOccurrences": "Hide affected nodes"
+    "hideOccurrences": "Hide affected nodes",
+    "scrollToSeeMore": "Scroll to see {{count}} more"
   },
   "severity": {
     "violation": "Error",
