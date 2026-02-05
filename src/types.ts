@@ -24,6 +24,17 @@ export interface SHACLMessage {
   lang?: string | null;
 }
 
+/**
+ * Humanized representation of a blank node for display purposes
+ */
+export interface HumanizedNode {
+  originalId: string;
+  label?: string;
+  type?: string;
+  typeLabel?: string;
+  context?: string;
+}
+
 export interface SHACLViolation {
   severity: SHACLSeverity;
   focusNode?: string;
@@ -36,6 +47,8 @@ export interface SHACLViolation {
   foafPage?: string;
   translationKey?: string;
   translationParams?: Record<string, any>;
+  humanizedFocusNode?: HumanizedNode;
+  humanizedValue?: HumanizedNode;
 }
 
 export interface SHACLReport {

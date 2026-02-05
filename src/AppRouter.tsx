@@ -17,11 +17,13 @@ const SettingsPanel = lazy(() => import('./components/Settings/SettingsPanel'));
 const AppRouter: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [report, setReport] = React.useState<SHACLReport | null>(null);
+  const [profileSelection, setProfileSelection] = React.useState<ProfileSelection | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const handleValidate = async (content: string, profile: ProfileSelection) => {
     setIsLoading(true);
     setReport(null);
+    setProfileSelection(profile);
     const normalizedLanguage = (i18n.language || 'es').split('-')[0];
     try {
       // Extract SHACL content strings from custom files if mode is custom
@@ -36,7 +38,8 @@ const AppRouter: React.FC = () => {
         normalizedLanguage,
         profile.branch,
         customShaclContents,
-        profile.mode
+        profile.mode,
+        profile.version
       );
       setReport(result);
     } catch (error) {
@@ -102,7 +105,7 @@ const AppRouter: React.FC = () => {
 
               {report && (
                 <Suspense fallback={<div className="flex items-center justify-center p-8"><div className="text-muted-foreground">{t('common.loading', 'Loading...')}</div></div>}>
-                  <ValidationResults report={report} />
+                  <ValidationResults report={report} profileSelection={profileSelection || undefined} />
                 </Suspense>
               )}
             </div>

@@ -212,6 +212,9 @@ Edit `src/config/mqa-config.json` to add or modify validation profiles:
 }
 ```
 
+>[!TIP]
+> If you need to use local SHACL files for development, refer to the [scripts/README-local-shacl.md](scripts/README-local-shacl.md) guide.
+
 ### Environment Variables
 
 Vite uses `import.meta.env`:

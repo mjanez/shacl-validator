@@ -81,7 +81,7 @@ const buildReportFromQuads = (quads: any[]): SHACLReport => {
 
     const sourceShapeNode = getObject(resNode, 'http://www.w3.org/ns/shacl#sourceShape');
     const sourceShape = sourceShapeNode?.value || '';
-    const docLink = sourceShapeNode ? getValue(sourceShapeNode, foafPage) : '';
+    const docLink = getValue(resNode, foafPage);
     const messages = getLiteralMessages(resNode, 'http://www.w3.org/ns/shacl#resultMessage');
 
     const violation: SHACLViolation = {

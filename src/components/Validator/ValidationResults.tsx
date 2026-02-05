@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SHACLReport, SHACLSeverity, SHACLMessage } from '../../types';
+import { SHACLReport, SHACLSeverity, SHACLMessage, HumanizedNode, ProfileSelection } from '../../types';
 import SHACLValidationService from '../../services/SHACLValidationService';
 import ReactMarkdown from 'react-markdown';
 import { Badge } from '../ui/badge';
@@ -14,15 +14,19 @@ import {
   ExternalLink,
   FileSpreadsheet,
   Filter,
-  XCircle
+  XCircle,
+  BookOpen
 } from 'lucide-react';
 import * as Comlink from 'comlink';
 import { ResponsiveContainer, LineChart, Line } from 'recharts';
 import { cn } from '../../lib/utils';
+import { compactIri, extractUrlsFromText } from '../../lib/rdfPrefixes';
 import type { ReportWorkerApi, FlattenedRow } from '../../workers/reportWorker';
+import mqaConfig from '../../config/mqa-config.json';
 
 interface ValidationResultsProps {
   report: SHACLReport;
+  profileSelection?: ProfileSelection;
 }
 
 const HISTORY_KEY = 'shacl-history';
@@ -33,48 +37,6 @@ const severityChips: Array<{ key: 'all' | 'violation' | 'warning' | 'info'; labe
   { key: 'warning', labelKey: 'severity.warning' },
   { key: 'info', labelKey: 'severity.info' }
 ];
-
-const iriPrefixes: Array<{ iri: string; prefix: string }> = [
-  { iri: 'http://www.w3.org/ns/adms#', prefix: 'adms' },
-  { iri: 'http://www.w3.org/2011/content#', prefix: 'cnt' },
-  { iri: 'http://www.w3.org/ns/dcat#', prefix: 'dcat' },
-  { iri: 'http://data.europa.eu/r5r/', prefix: 'dcatap' },
-  { iri: 'http://purl.org/dc/terms/', prefix: 'dct' },
-  { iri: 'http://data.europa.eu/eli/ontology#', prefix: 'eli' },
-  { iri: 'http://xmlns.com/foaf/0.1/', prefix: 'foaf' },
-  { iri: 'http://www.opengis.net/ont/geosparql#', prefix: 'geo' },
-  { iri: 'http://www.w3.org/ns/locn#', prefix: 'locn' },
-  { iri: 'http://www.w3.org/ns/odrl/2/', prefix: 'odrl' },
-  { iri: 'http://www.w3.org/ns/prov#', prefix: 'prov' },
-  { iri: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', prefix: 'rdf' },
-  { iri: 'http://www.w3.org/2000/01/rdf-schema#', prefix: 'rdfs' },
-  { iri: 'http://schema.org/', prefix: 'schema' },
-  { iri: 'http://www.w3.org/2004/02/skos/core#', prefix: 'skos' },
-  { iri: 'http://spdx.org/rdf/terms#', prefix: 'spdx' },
-  { iri: 'http://www.w3.org/2006/time#', prefix: 'time' },
-  { iri: 'http://www.w3.org/2006/vcard/ns#', prefix: 'vcard' },
-  { iri: 'http://www.w3.org/2001/XMLSchema#', prefix: 'xsd' },
-  { iri: 'http://www.w3.org/ns/dqv#', prefix: 'dqv' },
-  { iri: 'http://www.w3.org/ns/shacl#', prefix: 'sh' },
-  { iri: 'http://www.w3.org/2002/07/owl#', prefix: 'owl' }
-];
-
-const compactIri = (value?: string) => {
-  if (!value) return '—';
-  const match = iriPrefixes.find((entry) => value.startsWith(entry.iri));
-  if (match) {
-    return `${match.prefix}:${value.slice(match.iri.length)}`;
-  }
-  const hashIndex = value.lastIndexOf('#');
-  if (hashIndex >= 0 && hashIndex < value.length - 1) {
-    return value.slice(hashIndex + 1);
-  }
-  const slashIndex = value.lastIndexOf('/');
-  if (slashIndex >= 0 && slashIndex < value.length - 1) {
-    return value.slice(slashIndex + 1);
-  }
-  return value;
-};
 
 const isHttpUri = (value?: string) => !!value && /^https?:\/\//i.test(value);
 
@@ -104,6 +66,37 @@ const renderLinkedValue = (value?: string, label?: string) => {
   );
 };
 
+/**
+ * Renders a value with humanized information for blank nodes
+ * Shows type badge + label when available, otherwise falls back to the original value
+ */
+const renderHumanizedValue = (value?: string, humanized?: HumanizedNode) => {
+  if (!value) {
+    return <span className="text-muted-foreground">—</span>;
+  }
+
+  // If we have humanized info, show it nicely
+  if (humanized && (humanized.label || humanized.typeLabel)) {
+    return (
+      <div className="flex flex-col gap-0.5" title={`${humanized.originalId}${humanized.type ? ` (${humanized.type})` : ''}`}>
+        {humanized.typeLabel && (
+          <span className="inline-flex w-fit items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+            {humanized.typeLabel}
+          </span>
+        )}
+        {humanized.label ? (
+          <span className="line-clamp-2 break-all text-xs">{humanized.label}</span>
+        ) : (
+          <span className="line-clamp-1 break-all font-mono text-[10px] text-muted-foreground">{humanized.originalId}</span>
+        )}
+      </div>
+    );
+  }
+
+  // Fall back to standard rendering
+  return renderLinkedValue(value);
+};
+
 const markdownComponents = {
   a: ({ node, ...props }: any) => (
     <a
@@ -127,6 +120,7 @@ const markdownComponents = {
 /**
  * Converts pipe-separated text to bullet list and ensures URLs render as links.
  * Preserves markdown tables.
+ * Always converts plain URLs to markdown links for proper rendering.
  */
 const preprocessMarkdown = (text: string): string => {
   const isMarkdownTable = /^\s*\|?.+\|.+\n\s*\|?\s*[-:\s|]+\|/.test(text);
@@ -134,16 +128,30 @@ const preprocessMarkdown = (text: string): string => {
     return text;
   }
 
+  let processed = text;
+  
+  // Convert pipe separators to bullet list
   const hasPipeSeparators = /\s*\|\s*/.test(text);
-  if (!hasPipeSeparators) {
-    return text;
+  if (hasPipeSeparators) {
+    processed = processed.replace(/\s*\|\s*/g, '\n- ');
   }
 
-  let processed = text.replace(/\s*\|\s*/g, '\n- ');
+  // Always convert plain URLs to markdown links (even without pipe separators)
+  const markdownLinks: string[] = [];
+  processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match) => {
+    const placeholder = `__MDLINK_${markdownLinks.length}__`;
+    markdownLinks.push(match);
+    return placeholder;
+  });
+
   processed = processed.replace(
-    /<?(https?:\/\/[^\s<>)]+)>?/gi,
-    (match, url) => `[${url}](${url})`
+    /https?:\/\/[^\s<>)]+/gi,
+    (url) => `[${url}](${url})`
   );
+
+  markdownLinks.forEach((link, idx) => {
+    processed = processed.replace(`__MDLINK_${idx}__`, link);
+  });
 
   return processed;
 };
@@ -175,6 +183,16 @@ const selectMessageForLocale = (messages: SHACLMessage[], preferred?: string, fa
   return (noLang || messages[0]).text;
 };
 
+/**
+ * Formats a number with thousands separator according to locale
+ * @param value The number to format
+ * @param locale The locale ('es' uses dot, 'en' uses comma)
+ */
+const formatNumber = (value: number, locale: string = 'es'): string => {
+  const separator = locale === 'es' ? '.' : ',';
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+};
+
 interface GroupedFinding {
   id: string;
   severity: SHACLSeverity;
@@ -182,7 +200,14 @@ interface GroupedFinding {
   sourceShape?: string;
   sourceConstraintComponent?: string;
   foafPage?: string;
-  occurrences: Array<{ id: string; focusNode?: string; path?: string; value?: string }>;
+  occurrences: Array<{
+    id: string;
+    focusNode?: string;
+    path?: string;
+    value?: string;
+    humanizedFocusNode?: HumanizedNode;
+    humanizedValue?: HumanizedNode;
+  }>;
   total: number;
 }
 
@@ -208,9 +233,9 @@ const severityVisuals: Record<SHACLSeverity, { dot: string; pill: string }> = {
 };
 
 const MAX_VISIBLE_FINDINGS = 10;
-const RESULT_CARD_ESTIMATED_HEIGHT = 210;
+const RESULT_CARD_ESTIMATED_HEIGHT = 180; // Altura estimada por card para scroll
 
-const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
+const ValidationResults: React.FC<ValidationResultsProps> = ({ report, profileSelection }) => {
   const { t, i18n } = useTranslation();
   const activeLanguage = normalizeLang(i18n.language) || 'es';
   const [rows, setRows] = useState<FlattenedRow[]>([]);
@@ -287,7 +312,9 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
         id: `${key}-${group.occurrences.length}-${index}`,
         focusNode: row.focusNode,
         path: row.path,
-        value: row.value
+        value: row.value,
+        humanizedFocusNode: row.humanizedFocusNode,
+        humanizedValue: row.humanizedValue
       });
       group.total += 1;
     });
@@ -337,6 +364,20 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
     URL.revokeObjectURL(url);
   };
 
+  // Get the guide URL from the profile configuration
+  const getGuideUrl = (): string | undefined => {
+    if (!profileSelection || profileSelection.mode === 'custom') return undefined;
+    
+    const profiles = mqaConfig.profiles as Record<string, any>;
+    const profileConfig = profiles[profileSelection.profile];
+    if (!profileConfig) return undefined;
+    
+    const versionConfig = profileConfig.versions?.[profileSelection.version];
+    return versionConfig?.url;
+  };
+
+  const guideUrl = getGuideUrl();
+
   return (
     <div className="space-y-6">
       <Card>
@@ -352,6 +393,19 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
             </CardTitle>
           </div>
           <div className="flex flex-wrap gap-2">
+            {guideUrl && (
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="gap-2 border-primary/40 bg-primary/5 text-primary hover:bg-primary/15 hover:text-primary"
+              >
+                <a href={guideUrl} target="_blank" rel="noreferrer" title={t('results.guideLink')}>
+                  <BookOpen className="h-4 w-4" />
+                  {t('results.guideLink')}
+                </a>
+              </Button>
+            )}
             <Button variant="outline" size="sm" className="gap-2" onClick={downloadTTL}>
               <Download className="h-4 w-4" />
               {t('results.downloadTTL')}
@@ -372,7 +426,7 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
             ].map((card) => (
               <div key={card.label} className="rounded-2xl border border-border p-4">
                 <p className="text-xs uppercase text-muted-foreground">{card.label}</p>
-                <p className={cn('mt-2 text-3xl font-semibold', card.accent)}>{card.value}</p>
+                <p className={cn('mt-2 text-3xl font-semibold', card.accent)}>{formatNumber(card.value, activeLanguage)}</p>
                 {card.label === t('results.totalShapes') && history.length > 0 && (
                   <div className="mt-3 h-16">
                     <ResponsiveContainer width="100%" height="100%">
@@ -421,14 +475,15 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
                 className={cn(
                   'space-y-4 transition-all duration-300',
                   scrollNeeded &&
-                    'overflow-y-auto pr-2 [scrollbar-color:hsl(var(--primary)_/_0.5)_transparent] [scrollbar-width:thin]'
+                    'overflow-y-auto pr-2 [scrollbar-color:hsl(var(--primary)_/_0.6)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary/60 [&::-webkit-scrollbar-track]:bg-transparent'
                 )}
                 style={scrollContainerStyle}
               >
                 {groupedFindings.map((group) => {
                   const severityKey = group.severity.toLowerCase() as 'violation' | 'warning' | 'info';
                   const visuals = severityVisuals[group.severity];
-                  const affectedLabel = group.total === 1 ? t('results.affectedSingle') : t('results.affectedPlural', { count: group.total });
+                  const formattedCount = formatNumber(group.total, activeLanguage);
+                  const affectedLabel = group.total === 1 ? t('results.affectedSingle') : t('results.affectedPlural', { count: group.total, formattedCount });
                   const isOpen = expandedGroups[group.id] ?? false;
                   const localizedMessage = group.messages.length ? selectMessageForLocale(group.messages, activeLanguage) : undefined;
                   const messageToRender = localizedMessage || t('table.message');
@@ -500,9 +555,9 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
                               key={item.id}
                               className="grid grid-cols-[minmax(0,0.6fr)_minmax(0,0.5fr)_minmax(0,0.4fr)] gap-4 px-4 py-3 text-xs text-foreground odd:bg-card/40"
                             >
-                              <div className="min-w-0">{renderLinkedValue(item.focusNode)}</div>
+                              <div className="min-w-0">{renderHumanizedValue(item.focusNode, item.humanizedFocusNode)}</div>
                               <div className="min-w-0">{renderLinkedValue(item.path, compactIri(item.path))}</div>
-                              <div className="min-w-0">{renderLinkedValue(item.value)}</div>
+                              <div className="min-w-0">{renderHumanizedValue(item.value, item.humanizedValue)}</div>
                             </div>
                           ))}
                         </div>
@@ -512,7 +567,13 @@ const ValidationResults: React.FC<ValidationResultsProps> = ({ report }) => {
                 })}
               </div>
               {scrollNeeded && (
-                <div className="pointer-events-none absolute inset-x-1 bottom-0 h-16 rounded-b-2xl bg-gradient-to-t from-[hsl(var(--background))] via-[hsl(var(--background)/0.7)] to-transparent" />
+                <>
+                  <div className="pointer-events-none absolute inset-x-1 bottom-0 h-20 rounded-b-2xl bg-gradient-to-t from-[hsl(var(--background))] via-[hsl(var(--background)/0.8)] to-transparent" />
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-full bg-muted/90 px-3 py-1 text-xs text-muted-foreground backdrop-blur-sm">
+                    <ChevronDown className="h-3 w-3 animate-pulse" />
+                    <span>{t('results.scrollToSeeMore', { count: groupedFindings.length - MAX_VISIBLE_FINDINGS })}</span>
+                  </div>
+                </>
               )}
             </div>
           )}

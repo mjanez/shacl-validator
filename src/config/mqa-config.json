@@ -47,7 +47,7 @@
         "1.0.0": {
           "name": "DCAT-AP-ES",
           "url": "https://datosgobes.github.io/DCAT-AP-ES/",
-          "sampleUrl": "https://raw.githubusercontent.com/datosgobes/DCAT-AP-ES/refs/heads/{branch}/examples/ttl/1.0.0/E_DCAT-AP-ES_Catalog.ttl",
+          "sampleUrl": "https://raw.githubusercontent.com/datosgobes/DCAT-AP-ES/refs/heads/{branch}/examples/ttl/1.0.0/E_DCAT-AP-ES_minimal.ttl",
           "icon": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f1ea-1f1f8.svg",
           "shaclFiles": [
             "https://raw.githubusercontent.com/datosgobes/DCAT-AP-ES/refs/heads/{branch}/shacl/1.0.0/shacl_imports.ttl",
@@ -73,7 +73,7 @@
         "1.0.0": {
           "name": "DCAT-AP-ES HVD",
           "url": "https://datosgobes.github.io/DCAT-AP-ES/",
-          "sampleUrl": "https://raw.githubusercontent.com/datosgobes/DCAT-AP-ES/refs/heads/{branch}/examples/ttl/1.0.0/E_DCAT-AP-ES_Catalog.ttl",
+          "sampleUrl": "https://raw.githubusercontent.com/datosgobes/DCAT-AP-ES/refs/heads/{branch}/examples/ttl/1.0.0/E_DCAT-AP-ES_Catalog_HVD_minimal.ttl",
           "icon": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f1ea-1f1f8.svg",
           "shaclFiles": [
             "https://raw.githubusercontent.com/datosgobes/DCAT-AP-ES/refs/heads/{branch}/shacl/1.0.0/shacl_imports.ttl",
@@ -123,7 +123,7 @@
         "2.1.1": {
           "name": "DCAT-AP",
           "url": "https://semiceu.github.io/DCAT-AP/",
-          "sampleUrl": "https://raw.githubusercontent.com/datosgobes/DCAT-AP-ES/refs/heads/{branch}/examples/ttl/1.0.0/E_DCAT-AP-ES_Catalog.ttl",
+          "sampleUrl": "https://raw.githubusercontent.com/datosgobes/DCAT-AP-ES/refs/heads/{branch}/examples/ttl/1.0.0/E_DCAT-AP-ES_minimal.ttl",
           "icon": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f1ea-1f1fa.svg",
           "shaclFiles": [
             "https://raw.githubusercontent.com/SEMICeu/DCAT-AP/refs/heads/master/releases/2.1.1/dcat-ap_2.1.1_shacl_imports.ttl",

@@ -44,15 +44,15 @@
     "open": "Open command palette"
   },
   "home": {
-    "title": "RDF Metadata Validator",
-    "subtitle": "Validate your metadata against standard SHACL profiles (DCAT-AP, DCAT-AP-ES, NTI-RISP) directly in your browser.",
+    "title": "RDF Graph Validator",
+    "subtitle": "Validate your RDF graphs against standard SHACL profiles (DCAT-AP, DCAT-AP-ES, NTI-RISP), or custom shapes, directly in your browser.",
     "docsCta": "Read the usage guide"
   },
   "validator": {
     "validationMode": "Validation Mode",
     "mode": {
-      "predefined": "Standard Profiles",
-      "custom": "Custom SHACL"
+      "predefined": "Application Profiles",
+      "custom": "Custom SHACL Shapes"
     },
     "selectProfile": "Validation Profile",
     "version": "Version",
@@ -131,10 +131,12 @@
     "downloadCSV": "Download as CSV",
     "totalShapes": "Total findings",
     "documentationLink": "Documentation",
+    "guideLink": "Technical profile guide",
     "affectedSingle": "1 affected resource",
     "affectedPlural": "{{count}} affected resources",
     "showOccurrences": "Show affected nodes",
-    "hideOccurrences": "Hide affected nodes"
+    "hideOccurrences": "Hide affected nodes",
+    "scrollToSeeMore": "Scroll to see {{count}} more"
   },
   "severity": {
     "violation": "Error",

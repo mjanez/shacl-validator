@@ -60,6 +60,8 @@ Thumbs.db
 coverage/
 .nyc_output/
 test-results/
+src/config/mqa-config.*.json
+public/shacl/
 
 # Temporary files
 *.tmp
