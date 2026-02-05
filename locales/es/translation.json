@@ -44,15 +44,15 @@
     "open": "Abrir paleta de comandos"
   },
   "home": {
-    "title": "Validador de metadatos RDF",
-    "subtitle": "Valida tus metadatos contra perfiles SHACL estándar (DCAT-AP, DCAT-AP-ES, NTI-RISP) directamente en el navegador.",
+    "title": "Validador de grafos RDF",
+    "subtitle": "Valida tus grafos RDF contra perfiles SHACL estándar (DCAT-AP, DCAT-AP-ES, NTI-RISP), o formas personalizadas, directamente en el navegador.",
     "docsCta": "Leer la guía de uso"
   },
   "validator": {
     "validationMode": "Modo de validación",
     "mode": {
-      "predefined": "Perfiles estándar",
-      "custom": "SHACL personalizado"
+      "predefined": "Perfiles de Aplicación",
+      "custom": "Formas SHACL personalizadas"
     },
     "selectProfile": "Perfil de validación",
     "version": "Versión",
@@ -134,10 +134,12 @@
     "downloadCSV": "Descargar como CSV",
     "totalShapes": "Hallazgos totales",
     "documentationLink": "Documentación",
+    "guideLink": "Guía técnica del perfil",
     "affectedSingle": "1 recurso afectado",
     "affectedPlural": "{{count}} recursos afectados",
     "showOccurrences": "Mostrar nodos afectados",
-    "hideOccurrences": "Ocultar nodos afectados"
+    "hideOccurrences": "Ocultar nodos afectados",
+    "scrollToSeeMore": "Desplázate para ver {{count}} más"
   },
   "severity": {
     "violation": "Error",
