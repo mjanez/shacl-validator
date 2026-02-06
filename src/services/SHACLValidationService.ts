@@ -2,17 +2,29 @@
 // These are only loaded when validateRDF is called
 let _Validator: typeof import('shacl-engine').Validator | null = null;
 let _sparqlValidations: typeof import('shacl-engine/sparql.js').validations | null = null;
+let _sparqlTargetResolvers: typeof import('shacl-engine/sparql.js').targetResolvers | null = null;
+
+// Using shacl-engine@1.1.0 with experimental sh:SPARQLTarget support
+// This version supports:
+// - sh:sparql (SPARQL-based constraints) 
+// - sh:SPARQLTarget (SPARQL-based targets) (experimental)
+// Note: Version 1.1.0 may have parser issues with some SPARQL queries
 
 async function getShaclEngine() {
-  if (!_Validator || !_sparqlValidations) {
+  if (!_Validator || !_sparqlValidations || !_sparqlTargetResolvers) {
     const [shaclModule, sparqlModule] = await Promise.all([
       import('shacl-engine'),
       import('shacl-engine/sparql.js')
     ]);
     _Validator = shaclModule.Validator;
     _sparqlValidations = sparqlModule.validations;
+    _sparqlTargetResolvers = sparqlModule.targetResolvers;
   }
-  return { Validator: _Validator, sparqlValidations: _sparqlValidations };
+  return { 
+    Validator: _Validator, 
+    sparqlValidations: _sparqlValidations,
+    sparqlTargetResolvers: _sparqlTargetResolvers
+  };
 }
 
 import rdfDataModel from '@rdfjs/data-model';
@@ -491,13 +503,14 @@ class SHACLValidationService {
     }
 
     // Lazy load shacl-engine only when needed
-    const { Validator, sparqlValidations } = await getShaclEngine();
+    const { Validator, sparqlValidations, sparqlTargetResolvers } = await getShaclEngine();
     
     const validator = new Validator(shapes, {
       factory: rdfDataModel,
       debug: false,
       details: true,
-      validations: sparqlValidations
+      validations: sparqlValidations,
+      targetResolvers: sparqlTargetResolvers
     });
 
     const report = await validator.validate({ dataset: data });

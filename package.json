@@ -56,7 +56,7 @@
     "react-tooltip": "^5.29.1",
     "readable-stream": "^4.5.2",
     "recharts": "^2.12.7",
-    "shacl-engine": "^1.0.2",
+    "shacl-engine": "1.1.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7"
   },
