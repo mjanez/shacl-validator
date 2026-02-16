@@ -90,18 +90,18 @@ const ProfileSelector: React.FC<ProfileSelectorProps> = ({ selectedProfile, onPr
           <CardDescription>{t('validator.workspaceSubtitle')}</CardDescription>
         </div>
         {currentVersionConfig && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" asChild aria-label={t('validator.profileInfo') ?? 'Profile documentation'}>
-                  <a href={currentVersionConfig.url} target="_blank" rel="noreferrer" className="text-muted-foreground">
-                    <Info className="h-5 w-5" />
-                  </a>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t('validator.profileInfo')}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <a 
+            href={currentVersionConfig.url} 
+            target="_blank" 
+            rel="noreferrer" 
+            className="group inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-muted hover:text-foreground w-10 hover:w-auto overflow-hidden"
+            aria-label={t('validator.profileInfo') ?? 'Profile documentation'}
+          >
+            <Info className="h-5 w-5 flex-shrink-0" />
+            <span className="whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              {t('validator.profileGuide', { profile: getProfileLabel(selectedProfile.profile, selectedProfile.version) })}
+            </span>
+          </a>
         )}
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-3">
