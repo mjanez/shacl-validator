@@ -198,6 +198,7 @@ dcatapes:Dataset_Shape
         sh:severity sh:Violation
     ],
     [
+        # Convencion 30
         sh:path dcat:theme ;
         sh:nodeKind sh:IRI ;
         sh:or(
@@ -211,7 +212,10 @@ dcatapes:Dataset_Shape
                 sh:node dcatapes:InspireDataThemeRestriction ;
             ]
         );
-        sh:severity sh:Violation
+        sh:severity sh:Warning ;
+        foaf:page <https://datosgobes.github.io/DCAT-AP-ES/convenciones/#convencion-30> ;
+        sh:message "Se recomienda que los temas provengan de los vocabularios estándar: sectores NTI, temas europeos o temas INSPIRE. Ver: https://datosgobes.github.io/DCAT-AP-ES/convenciones/#convencion-30"@es ;
+        sh:message "It is recommended that themes come from standard vocabularies: NTI sectors, European themes or INSPIRE themes. See: https://datosgobes.github.io/DCAT-AP-ES/convenciones/#convencion-30"@en
     ],
 
     # dcat:Distribution
@@ -520,8 +524,7 @@ dcatapes:Dataset_Shape
             [ 
                 # Literal of xsd:duration type (NTI legacy)
                 sh:nodeKind sh:Literal ;
-                sh:datatype xsd:duration ;
-                sh:node dcatapes:DurationRestriction;
+                sh:node dcatapes:FlexibleDurationRestriction;
             ]
         );
         sh:severity sh:Violation;
@@ -671,9 +674,17 @@ dcatapes:Dataset_Shape
     [
         sh:path dcat:temporalResolution ;
         sh:nodeKind sh:Literal ;
-        sh:datatype xsd:duration ;
-        sh:node dcatapes:DurationRestriction;
+        sh:node dcatapes:FlexibleDurationRestriction ;
         sh:severity sh:Violation ;
+        foaf:page <https://datosgobes.github.io/DCAT-AP-ES/#Dataset.temporalResolution> ;
+        sh:message "El valor de dcat:temporalResolution para duración debe seguir el formato ISO 8601 para xsd:duration o, excepcionalmente, una representación numérica en segundos. Ver Convención 31."@es ;
+        sh:message "The value of dcat:temporalResolution for duration must follow the ISO 8601 format for xsd:duration or, exceptionally, a numeric representation in seconds. See Convention 31."@en ;
+    ],
+    [
+        sh:path dcat:temporalResolution ;
+        sh:severity sh:Warning ;
+        sh:sparql dcatapes:WarnNumericDurationConstraint ;
+        foaf:page <https://datosgobes.github.io/DCAT-AP-ES/convenciones/#convencion-31> ;
     ],
 
     # dct:isReferencedBy
@@ -1120,8 +1131,7 @@ dcatapes:Frequency_Shape
             [ 
                 # Literal Duration
                 sh:nodeKind sh:Literal ;
-                sh:datatype xsd:duration ;
-                sh:node dcatapes:DurationRestriction ;
+                sh:node dcatapes:FlexibleDurationRestriction ;
             ]
         ) ;
         sh:severity sh:Violation ;
