@@ -58,6 +58,7 @@
     "version": "Versión",
     "branch": "Rama SHACL",
     "profileInfo": "Ver documentación del perfil",
+    "profileGuide": "Guía de {{profile}}",
     "validatingAgainst": "Validando contra",
     "pasteText": "Entrada directa",
     "url": "Desde URL",

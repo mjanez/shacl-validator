@@ -58,6 +58,7 @@
     "version": "Version",
     "branch": "SHACL Branch",
     "profileInfo": "View profile documentation",
+    "profileGuide": "{{profile}} Guide",
     "validatingAgainst": "Validating against",
     "pasteText": "Direct Input",
     "url": "From URL",
